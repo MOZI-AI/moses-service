@@ -20,6 +20,7 @@ class MosesRunner:
         self.input = input_file
         self.output = output_file
         self.moses_options = moses_opts
+        if not "W1" in moses_opts: moses_opts += ' -W1'
         self.output_regex = re.compile(r"(-?\d+) (.+) \[(.+)\]")
         self.logger = logging.getLogger("mozi_snet")
 
@@ -33,7 +34,7 @@ class MosesRunner:
         """
         cmd = "moses -i {0} -o {1} {2}".format(self.input, self.output, self.moses_options)
         self.logger.info("Started Moses with options: " + cmd)
-
+        # TODO remove the shell=True option
         process = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
@@ -52,7 +53,7 @@ class MosesRunner:
                 if match is not None:
                     model = match.group(2)
                     complexity = match.group(3).split(",")[2].split("=")[1]
-                    formatted_line = "%s,%s" % (model, complexity)
+                    formatted_line = "%s,%s\n" % (model.strip(), complexity.strip())
                     fp.write(formatted_line)
 
         # Add the model,complexity header

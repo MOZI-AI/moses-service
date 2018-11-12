@@ -43,12 +43,12 @@ class TestMosesRun(unittest.TestCase):
 
     def test_format_combo(self):
         moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts)
-
-        test_combo_file = os.path.join(DATA_DIR, "test_combo")
+        moses_runner.run_moses()
+        test_combo_file = os.path.join(DATA_DIR, self.output_file)
 
         moses_runner.format_combo(test_combo_file)
 
-        test_regex = re.compile(r"(\w+),(\d+)")
+        test_regex = re.compile(r"(.+),(\d+)")
 
         with open(test_combo_file, "r") as f:
             for i, line in enumerate(f):
