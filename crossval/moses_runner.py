@@ -32,10 +32,15 @@ class MosesRunner:
         :returns stdout: the standard output of the process
         :returns stdin: the error output of the process, if any
         """
-        cmd = "moses -i {0} -o {1} {2}".format(self.input, self.output, self.moses_options)
-        self.logger.info("Started Moses with options: " + cmd)
-        # TODO remove the shell=True option
-        process = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        cmd = ["moses", "-i", self.input, "-o", self.output]
+
+        for opt in self.moses_options.split():
+            cmd.append(opt)
+
+        self.logger.info("Started Moses with options: " + self.moses_options)
+
+        process = subprocess.Popen(args=cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
 
         return process.returncode, stdout, stderr
@@ -62,4 +67,3 @@ class MosesRunner:
             content = fp.read()
             fp.seek(0, 0)
             fp.write("%s,%s\n%s" % ("model", "complexity", content))
-

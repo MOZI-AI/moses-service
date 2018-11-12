@@ -43,12 +43,10 @@ class ModelEvaluator:
         temp_eval_file = "eval_tmp"
 
         for i, model in enumerate(models):
-            cmd = "eval-table -i {0} -c '{1}' -o{2} -u{3}".format(input_file, model, temp_eval_file, self.target_feature)
-
+            cmd = ["eval-table", "-i", input_file, "-c", model, "-o", temp_eval_file, "-u", self.target_feature]
             self.logger.debug("Evaluating model %s" % model)
             self.logger.debug("Eval table command: %s" % cmd)
-            # TODO remove the shell=True option
-            process = subprocess.Popen(args=cmd, shell=True, stdout=subprocess.PIPE)
+            process = subprocess.Popen(args=cmd, stdout=subprocess.PIPE)
 
             stdout, stderr = process.communicate()
 

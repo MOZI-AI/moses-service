@@ -12,10 +12,10 @@ class TestMosesRun(unittest.TestCase):
     def setUp(self):
         self.input_file = os.path.join(DATA_DIR, "bin_truncated.csv")
         self.output_file = os.path.join(DATA_DIR, "moses_test_output")
-        self.moses_opts = "-j8 --balance=1 -m 1000 -W1 --output-cscore=1 --result-count 100 " \
-                          "--reduct-knob-building-effort=1 --hc-widen-search=1 --enable-fs=1 --fs-algo=simple " \
-                          "--fs-target-size=4 --hc-crossover-min-neighbors=5000 --fs-focus=all --fs-seed=init " \
-                          "--complexity-ratio=3 --hc-fraction-of-nn=.3 --hc-crossover-pop-size=1000"
+        self.moses_opts = "-j 8 --balance 1 -m 1000 -W 1 --output-cscore 1 --result-count 100 " \
+                          "--reduct-knob-building-effort 1 --hc-widen-search 1 --enable-fs 1 --fs-algo simple " \
+                          "--fs-target-size 4 --hc-crossover-min-neighbors 5000 --fs-focus all --fs-seed init " \
+                          "--complexity-ratio 3 --hc-fraction-of-nn .3 --hc-crossover-pop-size 1000"
 
     def tearDown(self):
         if os.path.exists(self.output_file):
