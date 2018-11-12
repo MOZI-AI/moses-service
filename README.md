@@ -1,0 +1,1 @@
+mozi_snet_service
