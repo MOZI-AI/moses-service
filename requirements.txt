@@ -2,3 +2,5 @@ flask
 in_place
 numpy
 pandas
+mlxtend
+scikit-learn

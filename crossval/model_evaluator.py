@@ -5,16 +5,15 @@ import pandas as pd
 import subprocess
 import logging
 import os
+from mlxtend.evaluate import scoring, mcnemar, mcnemar_table
+
 
 class ModelEvaluator:
     """
     This is class evaluates programs that are output by MOSES and scores them against test and training data
     """
 
-    def __init__(self, model_file, test_file, train_file, target_feature):
-        self.model = model_file
-        self.test = test_file
-        self.train = train_file
+    def __init__(self, target_feature):
         self.target_feature = target_feature
         self.logger = logging.getLogger("mozi_snet")
 
@@ -45,15 +44,12 @@ class ModelEvaluator:
         for i, model in enumerate(models):
             cmd = ["eval-table", "-i", input_file, "-c", model, "-o", temp_eval_file, "-u", self.target_feature]
             self.logger.debug("Evaluating model %s" % model)
-            self.logger.debug("Eval table command: %s" % cmd)
             process = subprocess.Popen(args=cmd, stdout=subprocess.PIPE)
 
             stdout, stderr = process.communicate()
 
             if process.returncode == 0:
                 matrix[i] = np.genfromtxt(temp_eval_file, skip_header=1, dtype=int)
-
-
             else:
                 self.logger.error("The following error raised by eval-table %s" % stderr.decode("utf-8"))
                 raise ChildProcessError("Eval-table run to this error: %s" % stderr.decode("utf-8"))
@@ -64,5 +60,64 @@ class ModelEvaluator:
 
         return matrix
 
+    def score_models(self, matrix, input_file):
+        """
+        Takes a matrix containing the predicted value of each model and a file to containing the actual target values
+        It calculates the accuracy, recall, precision and f1 score of each model
+        :param matrix: The input matrix
+        containing the predicted values for each model. This the matrix returned by functions like run-eval
+        :param input_file: this the test file containing the actual target values
+        :return: matrix: returns an nx4 matrix where n is the number of model.
+        """
+        score_matrix = np.empty((matrix.shape[0], 4))
 
+        df = pd.read_csv(input_file)
+        for i, row in enumerate(matrix):
+            if np.unique(row).shape[0] == 1:
+                # if the model is either true or false model, it has no significance. Hence assign -1 for each value
+                neg_ar = np.empty((1, 4))
+                neg_ar.fill(-1)
+                score_matrix[i] = neg_ar
+            else:
+                target_value = df[self.target_feature].values
 
+                score_matrix[i] = self._get_scores(target_value, row)
+
+        return score_matrix
+
+    def _get_scores(self, target, predicted):
+        """
+        Helper method to get the accuracy, recall, precision and f1 scores
+        :param target: a numpy array containing the target values
+        :param predicted: a numpy array containing the predicted values
+        :return: a numpy array containing the scores
+        """
+        recall = scoring(target, predicted, metric="recall")
+        precision = scoring(target, predicted, metric="precision")
+        accuracy = scoring(target, predicted, metric="accuracy")
+        f_score = scoring(target, predicted, metric="f1")
+
+        return np.array([recall, precision, accuracy, f_score])
+
+    @staticmethod
+    def mcnemar_test(target, model_1_pred, model_2_pred):
+        """
+        Calculates p-value of the mcnemar test
+        It builds a contingency table and uses that to calculate the p-value
+        :param target: a numpy array that has the actual target values
+        :param model_1_pred: a numpy array that contains values based on prediction of model 1
+        :param model_2_pred: a numpy array that contains values based on prediction of model 2
+        :return p_value: the probability calculated under the chi-squared distribution
+        """
+        mc_table = mcnemar_table(y_target=target, y_model1=model_1_pred, y_model2=model_2_pred)
+
+        n = mc_table[0, 1] + mc_table[1, 0]
+        # if the sum of b + c is less than 25, we should you use the binomial distribution
+        # instead of the chi-squared distribution
+        if n < 25:
+            chi, p_value = mcnemar(ary=mc_table, exact=True)
+
+        else:
+            chi, p_value = mcnemar(ary=mc_table, exact=False)
+
+        return p_value
