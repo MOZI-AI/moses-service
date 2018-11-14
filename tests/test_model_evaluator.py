@@ -52,7 +52,7 @@ class TestModelEvaluator(unittest.TestCase):
 
         scored_matrix = model_eval.score_models(matrix, test_file)
 
-        self.assertEqual(scored_matrix.shape, (matrix.shape[0], 4))
+        self.assertEqual(scored_matrix.shape, (matrix.shape[0], 5))
 
         print(scored_matrix)
 

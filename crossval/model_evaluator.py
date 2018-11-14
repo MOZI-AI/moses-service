@@ -63,29 +63,34 @@ class ModelEvaluator:
     def score_models(self, matrix, input_file):
         """
         Takes a matrix containing the predicted value of each model and a file to containing the actual target values
-        It calculates the accuracy, recall, precision and f1 score of each model
+        It calculates the accuracy, recall, precision, f1 score and the p_value from mcnemar test of each model
         :param matrix: The input matrix
         containing the predicted values for each model. This the matrix returned by functions like run-eval
         :param input_file: this the test file containing the actual target values
         :return: matrix: returns an nx4 matrix where n is the number of model.
         """
-        score_matrix = np.empty((matrix.shape[0], 4))
+        score_matrix = np.empty((matrix.shape[0], 5))
 
         df = pd.read_csv(input_file)
+        target_value = df[self.target_feature].values
+        null_value = np.zeros((len(target_value),))
+
         for i, row in enumerate(matrix):
             if np.unique(row).shape[0] == 1:
                 # if the model is either true or false model, it has no significance. Hence assign -1 for each value
-                neg_ar = np.empty((1, 4))
+                neg_ar = np.empty((1, 5))
                 neg_ar.fill(-1)
                 score_matrix[i] = neg_ar
             else:
-                target_value = df[self.target_feature].values
-
-                score_matrix[i] = self._get_scores(target_value, row)
+                scores = ModelEvaluator._get_scores(target_value, row)
+                p_value = ModelEvaluator.mcnemar_test(target_value, row, null_value)
+                scores.append(p_value)
+                score_matrix[i] = np.array(scores)
 
         return score_matrix
 
-    def _get_scores(self, target, predicted):
+    @staticmethod
+    def _get_scores(target, predicted):
         """
         Helper method to get the accuracy, recall, precision and f1 scores
         :param target: a numpy array containing the target values
@@ -97,7 +102,7 @@ class ModelEvaluator:
         accuracy = scoring(target, predicted, metric="accuracy")
         f_score = scoring(target, predicted, metric="f1")
 
-        return np.array([recall, precision, accuracy, f_score])
+        return [recall, precision, accuracy, f_score]
 
     @staticmethod
     def mcnemar_test(target, model_1_pred, model_2_pred):
