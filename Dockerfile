@@ -9,22 +9,11 @@ RUN sudo apt-get update
 RUN sudo apt-get install -y git wget curl vim man
 RUN sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
 
-##Install Moses
-#ADD https://raw.githubusercontent.com/opencog/ocpkg/master/ocpkg \
-#    /tmp/octool
-#RUN chmod 755 /tmp/octool
-#
-#RUN /tmp/octool -m ; ccache -C
-#Define HOME Var
 ENV HOME /home/opencog
 
 #Install pyenv and use it for managing python version
 RUN curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
 
-#RUN source ~/.bashrc
-#
-#RUN eval "$(pyenv init -)"
-#RUN eval "$(pyenv virtualenv-init -)"
 ENV PYENV_ROOT $HOME/.pyenv
 ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
