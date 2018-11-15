@@ -1,4 +1,6 @@
 flask
+grpcio==1.12.1
+grpcio-tools==1.12.1
 in_place
 numpy
 pandas

@@ -1,0 +1,24 @@
+syntax = 'proto3';
+
+message CrossValOptions {
+    int32 folds = 1;
+    float testSize = 2;
+    int32 randomSeed = 3;
+}
+
+message AnalysisParameters {
+    string mosesOpts = 1;
+    CrossValOptions crossValOpts = 2;
+    string category = 3;
+    string dataset = 4;
+}
+
+message Result {
+    string resultUrl = 1;
+    string description = 2;
+}
+
+service MosesService {
+    rpc StartAnalysis(AnalysisParameters) returns (Result) {};
+}
+
