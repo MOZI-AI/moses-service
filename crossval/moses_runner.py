@@ -56,9 +56,11 @@ class MosesRunner:
             for line in fp:
                 match = self.output_regex.match(line.strip())
                 if match is not None:
-                    model = match.group(2)
+                    model = match.group(2).strip()
+                    if model == "true" or model == "false":
+                        continue
                     complexity = match.group(3).split(",")[2].split("=")[1]
-                    formatted_line = "%s,%s\n" % (model.strip(), complexity.strip())
+                    formatted_line = "%s,%s\n" % (model, complexity.strip())
                     fp.write(formatted_line)
 
         # Add the model,complexity header

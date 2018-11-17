@@ -27,17 +27,14 @@ class ModelEvaluator:
         nxm matrix where n is the number of models and m is the number of samples. the matrix contains the predicted
         output of each model on the sample
         """
-        with open(combo_file, "r") as fp:
-            num_models = sum(1 for line in fp) - 1  # the number of models
-
-        with open(input_file, "r") as fp:
-            num_samples = sum(1 for line in fp) - 1
-
-        matrix = np.empty((num_models, num_samples), dtype=int)
 
         models_df = pd.read_csv(combo_file)
+        input_df = pd.read_csv(input_file)
 
-        models = models_df.model.values
+        models = models_df.iloc[:,0].values
+
+        num_models, num_samples = models_df.shape[0], input_df.shape[0]
+        matrix = np.empty((num_models, num_samples), dtype=int)
 
         temp_eval_file = "eval_tmp"
 
@@ -78,7 +75,7 @@ class ModelEvaluator:
         for i, row in enumerate(matrix):
             if np.unique(row).shape[0] == 1:
                 # if the model is either true or false model, it has no significance. Hence assign -1 for each value
-                neg_ar = np.empty((1, 5))
+                neg_ar = np.empty((5,))
                 neg_ar.fill(-1)
                 score_matrix[i] = neg_ar
             else:

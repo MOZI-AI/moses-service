@@ -1,4 +1,3 @@
-model,complexity
 or(and(!$AQP3 $ARHGAP18) !$ANKRD46),3
 !$ANKRD46,1
 or(and($APLNR !$AQP3 $ARHGAP18) !$ANKRD46),4
