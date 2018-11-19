@@ -3,15 +3,15 @@ __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 import re
 from crossval.moses_runner import MosesRunner
 import unittest
-from tests import DATA_DIR, moses_options
+from config import TEST_DATA_DIR, moses_options
 import os
 
 
 class TestMosesRun(unittest.TestCase):
 
     def setUp(self):
-        self.input_file = os.path.join(DATA_DIR, "bin_truncated.csv")
-        self.output_file = os.path.join(DATA_DIR, "moses_test_output")
+        self.input_file = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
+        self.output_file = os.path.join(TEST_DATA_DIR, "moses_test_output")
         self.moses_opts = moses_options
 
     def tearDown(self):
@@ -41,7 +41,7 @@ class TestMosesRun(unittest.TestCase):
     def test_format_combo(self):
         moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts)
         moses_runner.run_moses()
-        test_combo_file = os.path.join(DATA_DIR, self.output_file)
+        test_combo_file = os.path.join(TEST_DATA_DIR, self.output_file)
 
         moses_runner.format_combo(test_combo_file)
 

@@ -7,13 +7,13 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from crossval.model_evaluator import ModelEvaluator
-from tests import DATA_DIR
+from config import TEST_DATA_DIR
 
 
 class TestModelEvaluator(unittest.TestCase):
     def setUp(self):
-        self.test_combo = os.path.join(DATA_DIR, "test_combo")
-        self.input_file = os.path.join(DATA_DIR, "bin_truncated.csv")
+        self.test_combo = os.path.join(TEST_DATA_DIR, "test_combo")
+        self.input_file = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
 
     def test_run_eval_happy_path(self):
         model_eval = ModelEvaluator("case")
@@ -30,9 +30,9 @@ class TestModelEvaluator(unittest.TestCase):
     def test_score_models(self):
         df = pd.read_csv(self.input_file)
 
-        test_file = os.path.join(DATA_DIR, "temp_test.csv")
-        train_file = os.path.join(DATA_DIR, "temp_train.csv")
-        temp_model = os.path.join(DATA_DIR, "temp_model.csv")
+        test_file = os.path.join(TEST_DATA_DIR, "temp_test.csv")
+        train_file = os.path.join(TEST_DATA_DIR, "temp_train.csv")
+        temp_model = os.path.join(TEST_DATA_DIR, "temp_model.csv")
 
         train, test = train_test_split(df, test_size=0.3)
 
@@ -40,7 +40,7 @@ class TestModelEvaluator(unittest.TestCase):
         test.to_csv(test_file, index=False)
 
         # make a copy of test_combo and use that for the test
-        temp_file = os.path.join(DATA_DIR, temp_model)
+        temp_file = os.path.join(TEST_DATA_DIR, temp_model)
         with open(self.input_file) as f:
             with open(temp_file, "w") as fp:
                 for line in f:

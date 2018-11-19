@@ -9,6 +9,7 @@ import random
 import logging
 from crossval.model_evaluator import ModelEvaluator
 import math
+from utils.feature_count import combo_parser, ComboTreeTransform
 
 
 class CrossValidation:
@@ -30,6 +31,8 @@ class CrossValidation:
         self.train_file, self.test_file = None, None
         self.fold_files = []
         self._set_dir()
+
+        self.tree_transformer = ComboTreeTransform()
 
     def _set_dir(self):
         if not os.path.exists(self.cwd):
@@ -82,8 +85,15 @@ class CrossValidation:
             CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
             self.score_fold(fold_fname)
+            self.count_features(fold_fname)
 
             i += 1
+
+        # save the feature count file
+
+        feature_count_df = pd.DataFrame.from_dict(self.tree_transformer.fcount)
+
+        feature_count_df.to_csv("feature_count.csv")
 
     def score_fold(self, fold_fname):
         model_evaluator = ModelEvaluator(self.session.target_feature)
@@ -118,6 +128,20 @@ class CrossValidation:
                     df.loc[i, label] = score
 
         df.to_csv(fold_file, index=False)
+
+    def count_features(self, fold_file):
+        """
+        Count the unique features that are found in models of a fold.
+        :param fold_file:
+        :return:
+        """
+        df = pd.read_csv(fold_file)
+
+        models = df["model"].values
+
+        for model in models:
+            tree = combo_parser.parse(model)
+            self.tree_transformer.transform(tree)
 
     @staticmethod
     def _generate_seeds(num_seeds, num_pop=10000):
