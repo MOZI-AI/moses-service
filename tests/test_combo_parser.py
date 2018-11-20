@@ -12,6 +12,6 @@ class TestComboParser(unittest.TestCase):
         tree_transformer = ComboTreeTransform()
         tree_transformer.transform(parse_tree)
 
-        output = {"ANKRD46": {"up": 0, "down": 2}, "APLNR": {"up": 2, "down": 0}, "ARHGAP18": {"up": 2, "down": 0}}
+        output = {"ANKRD46": {"case": 0, "control": 2}, "APLNR": {"case": 2, "control": 0}, "ARHGAP18": {"case": 2, "control": 0}}
 
         self.assertEqual(tree_transformer.fcount, output)

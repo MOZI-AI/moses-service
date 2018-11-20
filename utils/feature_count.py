@@ -34,13 +34,13 @@ class ComboTreeTransform(Transformer):
 
     def negate(self, s):
         self.up = False
-        self.fcount[self.curr]["up"] = self.fcount[self.curr]["up"] - 1
-        self.fcount[self.curr]["down"] = self.fcount[self.curr]["down"] + 1
+        self.fcount[self.curr]["case"] = self.fcount[self.curr]["case"] - 1
+        self.fcount[self.curr]["control"] = self.fcount[self.curr]["control"] + 1
 
     def name(self, s):
         feature = s[0].value
         self.curr = feature
         if not feature in self.fcount:
-            self.fcount[feature] = {"up": 0, "down": 0}
+            self.fcount[feature] = {"case": 0, "control": 0}
 
-        self.fcount[feature]["up"] = self.fcount[feature]["up"] + 1
+        self.fcount[feature]["case"] = self.fcount[feature]["case"] + 1
