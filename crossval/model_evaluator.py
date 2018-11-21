@@ -31,7 +31,7 @@ class ModelEvaluator:
         models_df = pd.read_csv(combo_file)
         input_df = pd.read_csv(input_file)
 
-        models = models_df.iloc[:,0].values
+        models = models_df.iloc[:, 0].values
 
         num_models, num_samples = models_df.shape[0], input_df.shape[0]
         matrix = np.empty((num_models, num_samples), dtype=int)

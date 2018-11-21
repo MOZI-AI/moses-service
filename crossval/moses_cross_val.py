@@ -10,7 +10,7 @@ import logging
 from crossval.model_evaluator import ModelEvaluator
 import math
 from utils.feature_count import combo_parser, ComboTreeTransform
-
+from scipy import stats
 
 class CrossValidation:
     """
@@ -84,7 +84,7 @@ class CrossValidation:
 
             CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
-            self.score_fold(fold_fname)
+            self.score_fold(i, fold_fname)
             self.count_features(fold_fname)
 
             i += 1
@@ -95,7 +95,7 @@ class CrossValidation:
 
         feature_count_df.to_csv("feature_count.csv")
 
-    def score_fold(self, fold_fname):
+    def score_fold(self, fold, fold_fname):
         model_evaluator = ModelEvaluator(self.session.target_feature)
 
         test_matrix = model_evaluator.run_eval(fold_fname, self.test_file)
@@ -106,7 +106,25 @@ class CrossValidation:
 
         score_matrix = np.concatenate((test_scores, train_scores), axis=1)
 
-        self.filter_scores(fold_fname, score_matrix)
+        df = self.filter_scores(fold_fname, score_matrix)
+
+        ensemble_scores = self.majority_vote(test_matrix)
+
+        top_models = df["model"].values[0:5]
+
+        arr = []
+
+        for model in top_models:
+            row = [model]
+            row.extend(ensemble_scores[0])
+            arr.append(row)
+
+        ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
+
+        df.to_csv(fold_fname, index=False)
+        ensemble_df.to_csv("ensemble_%d.csv" % fold, index=False)
+
+
 
     def filter_scores(self, fold_file, scores):
         """
@@ -127,7 +145,7 @@ class CrossValidation:
                  for label, score in zip(labels, row):
                     df.loc[i, label] = score
 
-        df.to_csv(fold_file, index=False)
+        return df
 
     def count_features(self, fold_file):
         """
@@ -142,6 +160,18 @@ class CrossValidation:
         for model in models:
             tree = combo_parser.parse(model)
             self.tree_transformer.transform(tree)
+
+    def majority_vote(self, matrix):
+        top_matrix = matrix[0:5]
+
+        majority_scores = stats.mode(top_matrix, nan_policy="omit").mode
+
+        model_evaluator = ModelEvaluator(self.session.target_feature)
+
+        scores = model_evaluator.score_models(majority_scores, self.test_file)
+
+        return scores
+
 
     @staticmethod
     def _generate_seeds(num_seeds, num_pop=10000):
