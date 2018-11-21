@@ -12,6 +12,7 @@ import math
 from utils.feature_count import combo_parser, ComboTreeTransform
 from scipy import stats
 
+
 class CrossValidation:
     """
     This class runs the cross-validation. It depends on MosesRunner and ModelEvaluator
@@ -108,23 +109,10 @@ class CrossValidation:
 
         df = self.filter_scores(fold_fname, score_matrix)
 
-        ensemble_scores = self.majority_vote(test_matrix)
-
-        top_models = df["model"].values[0:5]
-
-        arr = []
-
-        for model in top_models:
-            row = [model]
-            row.extend(ensemble_scores[0])
-            arr.append(row)
-
-        ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
+        ensemble_df = self.majority_vote(test_matrix, df)
 
         df.to_csv(fold_fname, index=False)
         ensemble_df.to_csv("ensemble_%d.csv" % fold, index=False)
-
-
 
     def filter_scores(self, fold_file, scores):
         """
@@ -134,7 +122,7 @@ class CrossValidation:
         :return:
         """
         labels = ["recall_test ", "precision_test", "accuracy_test", "f1_test", "p_value_test",
-                 "recall_train", "precision_train", "accuracy_train", "f1_train", "p_value_train"]
+                  "recall_train", "precision_train", "accuracy_train", "f1_train", "p_value_train"]
 
         df = pd.read_csv(fold_file)
 
@@ -142,7 +130,7 @@ class CrossValidation:
             if any(score < 0 or math.isnan(score) for score in scores[i]):
                 df.drop(df.index[[i]])
             else:
-                 for label, score in zip(labels, row):
+                for label, score in zip(labels, row):
                     df.loc[i, label] = score
 
         return df
@@ -161,17 +149,33 @@ class CrossValidation:
             tree = combo_parser.parse(model)
             self.tree_transformer.transform(tree)
 
-    def majority_vote(self, matrix):
-        top_matrix = matrix[0:5]
+    def majority_vote(self, matrix, df):
+        top_matrix = matrix[:5]
 
         majority_scores = stats.mode(top_matrix, nan_policy="omit").mode
 
         model_evaluator = ModelEvaluator(self.session.target_feature)
 
-        scores = model_evaluator.score_models(majority_scores, self.test_file)
+        scores = model_evaluator.score_models(np.array(top_matrix), self.test_file)
 
-        return scores
+        ensemble_score = model_evaluator.score_models(majority_scores, self.test_file)
 
+        top_models = df["model"].values[0:5]
+
+        arr = []
+
+        for model, score in zip(top_models, scores):
+            row = list(score)
+            row.insert(0, model)
+            arr.append(row)
+
+        ensemble_score = list(ensemble_score[0])
+        ensemble_score.insert(0, "ensemble")
+        arr.append(ensemble_score)
+
+        ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
+
+        return ensemble_df
 
     @staticmethod
     def _generate_seeds(num_seeds, num_pop=10000):

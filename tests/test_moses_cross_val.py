@@ -8,6 +8,8 @@ from crossval.moses_cross_val import CrossValidation
 import pandas as pd
 import glob
 from sklearn.model_selection import train_test_split
+from unittest.mock import MagicMock
+
 
 class TestCrossValidation(unittest.TestCase):
 
@@ -49,6 +51,7 @@ class TestCrossValidation(unittest.TestCase):
     def test_majority_vote(self):
         df = pd.read_csv(self.session.dataset)
 
+
         train_df, test_df = train_test_split(df, test_size=0.3)
 
         test_df.to_csv(self.test_file, index=False)
@@ -56,9 +59,13 @@ class TestCrossValidation(unittest.TestCase):
         moses_cross_val = CrossValidation(self.session, None, TEST_DATA_DIR)
         moses_cross_val.test_file = self.test_file
 
-        scores = moses_cross_val.majority_vote(self.test_matrix)
+        mock = MagicMock()
 
-        self.assertEqual(scores.shape, (1, 5))
+        mock["model"].values = ["and($APLNR !$AQP3)", "and(!$ANKRD46 $APLNR)", "$APLNR", "or(and($APLNR !$AQP3) !$ANKRD46)", "$APLNR"]
+
+        ensemble_df = moses_cross_val.majority_vote(self.test_matrix, mock)
+
+        self.assertEqual(ensemble_df.shape, (6, 6))
 
     def tearDown(self):
         if os.path.exists(self.test_file): os.remove(self.test_file)
