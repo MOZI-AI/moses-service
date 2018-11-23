@@ -17,7 +17,7 @@ class ModelEvaluator:
         self.target_feature = target_feature
         self.logger = logging.getLogger("mozi_snet")
 
-    def run_eval(self, combo_file, input_file):
+    def run_eval(self, models_df, input_file):
         """
         Takes a combo file containing MOSES programs and an input file on which it evaluates each program on.
         :param
@@ -28,10 +28,9 @@ class ModelEvaluator:
         output of each model on the sample
         """
 
-        models_df = pd.read_csv(combo_file)
         input_df = pd.read_csv(input_file)
 
-        models = models_df.iloc[:, 0].values
+        models = models_df.model.values
 
         num_models, num_samples = models_df.shape[0], input_df.shape[0]
         matrix = np.empty((num_models, num_samples), dtype=int)

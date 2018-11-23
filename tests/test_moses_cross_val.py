@@ -51,7 +51,6 @@ class TestCrossValidation(unittest.TestCase):
     def test_majority_vote(self):
         df = pd.read_csv(self.session.dataset)
 
-
         train_df, test_df = train_test_split(df, test_size=0.3)
 
         test_df.to_csv(self.test_file, index=False)
@@ -59,11 +58,9 @@ class TestCrossValidation(unittest.TestCase):
         moses_cross_val = CrossValidation(self.session, None, TEST_DATA_DIR)
         moses_cross_val.test_file = self.test_file
 
-        mock = MagicMock()
+        models = ["and($APLNR !$AQP3)", "and(!$ANKRD46 $APLNR)", "$APLNR", "or(and($APLNR !$AQP3) !$ANKRD46)", "$APLNR"]
 
-        mock["model"].values = ["and($APLNR !$AQP3)", "and(!$ANKRD46 $APLNR)", "$APLNR", "or(and($APLNR !$AQP3) !$ANKRD46)", "$APLNR"]
-
-        ensemble_df = moses_cross_val.majority_vote(self.test_matrix, mock)
+        ensemble_df = moses_cross_val.majority_vote(models)
 
         self.assertEqual(ensemble_df.shape, (6, 6))
 
@@ -82,8 +79,8 @@ class TestCrossValidation(unittest.TestCase):
         for file in glob.glob("fold_[0-9].csv"):
             os.remove(file)
 
-        for file in glob.glob("ensemble_[0-9].csv"):
-            os.remove(file)
+        if os.path.exists("ensemble.csv"):
+            os.remove("ensemble.csv")
 
 
 if __name__ == '__main__':

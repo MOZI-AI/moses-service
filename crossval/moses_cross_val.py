@@ -91,7 +91,13 @@ class CrossValidation:
             i += 1
 
         # save the feature count file
+        models = []
 
+        for fold in self.fold_files:
+            models.extend(pd.read_csv(fold).model.values[0:5])
+
+        ensemble_df = self.majority_vote(models)
+        ensemble_df.to_csv("ensemble.csv", index=False)
         feature_count_df = pd.DataFrame.from_dict(self.tree_transformer.fcount)
 
         feature_count_df.to_csv("feature_count.csv")
@@ -99,8 +105,9 @@ class CrossValidation:
     def score_fold(self, fold, fold_fname):
         model_evaluator = ModelEvaluator(self.session.target_feature)
 
-        test_matrix = model_evaluator.run_eval(fold_fname, self.test_file)
-        train_matrix = model_evaluator.run_eval(fold_fname, self.train_file)
+        fold_df = pd.read_csv(fold_fname)
+        test_matrix = model_evaluator.run_eval(fold_df, self.test_file)
+        train_matrix = model_evaluator.run_eval(fold_df, self.train_file)
 
         test_scores = model_evaluator.score_models(test_matrix, self.test_file)
         train_scores = model_evaluator.score_models(train_matrix, self.train_file)
@@ -109,10 +116,7 @@ class CrossValidation:
 
         df = self.filter_scores(fold_fname, score_matrix)
 
-        ensemble_df = self.majority_vote(test_matrix, df)
-
         df.to_csv(fold_fname, index=False)
-        ensemble_df.to_csv("ensemble_%d.csv" % fold, index=False)
 
     def filter_scores(self, fold_file, scores):
         """
@@ -149,22 +153,47 @@ class CrossValidation:
             tree = combo_parser.parse(model)
             self.tree_transformer.transform(tree)
 
-    def majority_vote(self, matrix, df):
-        top_matrix = matrix[:5]
+    # def majority_vote(self, matrix, df):
+    #     top_matrix = matrix[:5]
+    #
+    #     majority_scores = stats.mode(top_matrix, nan_policy="omit").mode
+    #
+    #     model_evaluator = ModelEvaluator(self.session.target_feature)
+    #
+    #     scores = model_evaluator.score_models(np.array(top_matrix), self.test_file)
+    #
+    #     ensemble_score = model_evaluator.score_models(majority_scores, self.test_file)
+    #
+    #     top_models = df["model"].values[0:5]
+    #
+    #     arr = []
+    #
+    #     for model, score in zip(top_models, scores):
+    #         row = list(score)
+    #         row.insert(0, model)
+    #         arr.append(row)
+    #
+    #     ensemble_score = list(ensemble_score[0])
+    #     ensemble_score.insert(0, "ensemble")
+    #     arr.append(ensemble_score)
+    #
+    #     ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
+    #
+    #     return ensemble_df
 
-        majority_scores = stats.mode(top_matrix, nan_policy="omit").mode
+    def majority_vote(self, models):
 
-        model_evaluator = ModelEvaluator(self.session.target_feature)
+        model_df = pd.DataFrame(models, columns=["model"])
+        model_eval = ModelEvaluator(self.session.target_feature)
 
-        scores = model_evaluator.score_models(np.array(top_matrix), self.test_file)
+        matrix = model_eval.run_eval(model_df, self.session.dataset)
+        majority_matrix = stats.mode(matrix, nan_policy="omit").mode
 
-        ensemble_score = model_evaluator.score_models(majority_scores, self.test_file)
-
-        top_models = df["model"].values[0:5]
+        score_matrix = model_eval.score_models(matrix, self.session.dataset)
+        ensemble_score = model_eval.score_models(majority_matrix, self.session.dataset)
 
         arr = []
-
-        for model, score in zip(top_models, scores):
+        for model, score in zip(models, score_matrix):
             row = list(score)
             row.insert(0, model)
             arr.append(row)
@@ -172,10 +201,12 @@ class CrossValidation:
         ensemble_score = list(ensemble_score[0])
         ensemble_score.insert(0, "ensemble")
         arr.append(ensemble_score)
-
         ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
 
         return ensemble_df
+
+
+
 
     @staticmethod
     def _generate_seeds(num_seeds, num_pop=10000):
