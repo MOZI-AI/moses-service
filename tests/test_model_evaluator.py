@@ -18,7 +18,8 @@ class TestModelEvaluator(unittest.TestCase):
     def test_run_eval_happy_path(self):
         model_eval = ModelEvaluator("case")
 
-        matrix = model_eval.run_eval(self.test_combo, self.input_file)
+        test_df = pd.read_csv(self.test_combo)
+        matrix = model_eval.run_eval(test_df, self.input_file)
 
         with open(self.test_combo, "r") as fp:
             rows = sum(1 for line in fp) - 1
@@ -48,7 +49,8 @@ class TestModelEvaluator(unittest.TestCase):
 
         model_eval = ModelEvaluator("case")
 
-        matrix = model_eval.run_eval(self.test_combo, test_file)
+        test_df = pd.read_csv(self.test_combo)
+        matrix = model_eval.run_eval(test_df, test_file)
 
         scored_matrix = model_eval.score_models(matrix, test_file)
 
@@ -59,3 +61,7 @@ class TestModelEvaluator(unittest.TestCase):
         os.remove(test_file)
         os.remove(train_file)
         os.remove(temp_model)
+
+
+if __name__ == '__main__':
+    unittest.main()
