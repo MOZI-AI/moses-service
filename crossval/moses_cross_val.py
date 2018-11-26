@@ -67,11 +67,11 @@ class CrossValidation:
 
             files = []
 
-            fold_fname = "fold_%d.csv" % i
+            fold_fname = f"fold_{i}.csv"
             self.fold_files.append(fold_fname)
 
             for seed in seeds:
-                output_file = "fold_{0}_seed_{1}.csv".format(str(i), str(seed))
+                output_file = f"fold_{i}_seed_{seed}.csv"
                 files.append(output_file)
                 moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
@@ -80,7 +80,7 @@ class CrossValidation:
 
                 if returncode != 0:
                     self.logger.error("Moses run into error: %s" % stderr.decode("utf-8"))
-                    raise ChildProcessError("Moses run into error: %s" % stderr.decode("utf-8"))
+                    raise ChildProcessError(stderr.decode("utf-8"))
 
                 moses_runner.format_combo(output_file)
 

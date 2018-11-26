@@ -48,7 +48,7 @@ class ModelEvaluator:
                 matrix[i] = np.genfromtxt(temp_eval_file, skip_header=1, dtype=int)
             else:
                 self.logger.error("The following error raised by eval-table %s" % stderr.decode("utf-8"))
-                raise ChildProcessError("Eval-table run to this error: %s" % stderr.decode("utf-8"))
+                raise ChildProcessError(stderr.decode("utf-8"))
 
         # clean up temp file and log file
         os.remove(temp_eval_file)

@@ -60,7 +60,7 @@ class Session:
 
         if result:
             session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"], result["target_feature"])
-            session.status = result["session"]
+            session.status = result["status"]
             session.message = result["message"]
             session.start_time = result["start_time"]
             session.end_time = result["end_time"]
