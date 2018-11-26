@@ -27,6 +27,7 @@ class TestTaskRunner(unittest.TestCase):
 
         tmp_session = Session.get_session(self.session.id, mock_db)
         self.assertEqual(tmp_session.status, 2)
+        self.assertEqual(tmp_session.progress, 100)
 
     def test_start_analysis_error_path(self):
         mock_db = mongomock.MongoClient().db
@@ -42,7 +43,6 @@ class TestTaskRunner(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(self.cwd):
             shutil.rmtree(self.cwd)
-
 
 
 if __name__ == "__main__":

@@ -12,8 +12,16 @@ celery.conf.update(CELERY_OPTS)
 
 logger = get_task_logger(__name__)
 
+
 @celery.task
 def start_analysis(session, cwd, db=None):
+    """
+    A celery task that runs the MOSES analysis
+    :param session: The session object
+    :param cwd: Current working directory to store the results of the analysis
+    :param db: A reference to the mongo database
+    :return:
+    """
     if not db:
         db = MongoClient(MONGODB_URI)[DB_NAME]
 
@@ -28,6 +36,7 @@ def start_analysis(session, cwd, db=None):
         logger.info("Cross-validation done successfully")
         session.status = 2
         session.message = "Success"
+        session.progress = 100
     except Exception as e:
         session.status = -1
         session.message = e.__str__()

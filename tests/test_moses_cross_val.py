@@ -37,6 +37,8 @@ class TestCrossValidation(unittest.TestCase):
 
     def test_run_folds(self):
         moses_cross_val = CrossValidation(self.session, None, TEST_DATA_DIR)
+        mock = MagicMock()
+        moses_cross_val.on_progress_update = mock
 
         moses_cross_val.run_folds()
 
@@ -47,6 +49,8 @@ class TestCrossValidation(unittest.TestCase):
         fold_df = pd.read_csv(fold_0)
 
         self.assertEqual(len(fold_df.columns), 12)
+
+        self.assertEqual(mock.call_count, 3)
 
     def test_majority_vote(self):
         df = pd.read_csv(self.session.dataset)

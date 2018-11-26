@@ -21,17 +21,20 @@ class CrossValidation:
     def __init__(self, session, db, cwd):
         """
         :param session: The session object that has the moses, cross-validation options and other metadata
-        :param db: A reference to the db connection object
+        :param db: The db connection object
         :param cwd: Current working directory to save files to
         """
         self.session = session
-        self.db = db
         self.cwd = cwd
+        self.db = db
         self.logger = logging.getLogger("mozi_snet")
 
         self.train_file, self.test_file = None, None
         self.fold_files = []
         self._set_dir()
+
+        self.total_runs = self.session.crossval_options["folds"] + 1
+        self.runs = 0
 
         self.tree_transformer = ComboTreeTransform()
 
@@ -49,17 +52,17 @@ class CrossValidation:
         """
         df = pd.read_csv(self.session.dataset)
 
-        X, y = df.values, df[self.session.target_feature].values
+        x, y = df.values, df[self.session.target_feature].values
         splits, test_size = self.session.crossval_options["folds"], self.session.crossval_options["testSize"]
         cv = StratifiedShuffleSplit(n_splits=splits, test_size=test_size)
 
         self.train_file, self.test_file = "train_file", "test_file"
 
         i = 0
-        for train_index, test_index in cv.split(X, y):
+        for train_index, test_index in cv.split(x, y):
             seeds = self._generate_seeds(self.session.crossval_options["randomSeed"])
 
-            x_train, x_test = X[train_index], X[test_index]
+            x_train, x_test = x[train_index], x[test_index]
 
             pd.DataFrame(x_train, columns=df.columns.values).to_csv(self.train_file, index=False)
 
@@ -86,10 +89,13 @@ class CrossValidation:
 
             CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
-            self.score_fold(i, fold_fname)
+            self.score_fold(fold_fname)
             self.count_features(fold_fname)
 
             i += 1
+            self.runs += 1
+
+            self.on_progress_update()
 
         # save the feature count file
         models = []
@@ -103,10 +109,22 @@ class CrossValidation:
 
         feature_count_df.to_csv("feature_count.csv")
 
-    def score_fold(self, fold, fold_fname):
+    def on_progress_update(self):
+        """
+        Calculates the percentage of folds that have been run and sets it as the value of the session progress attribute
+        :return:
+        """
+        self.runs += 1
+
+        percentage = int((self.runs / self.total_runs) * 100)
+
+        self.session.progress = percentage
+
+        self.session.update_session(self.db)
+
+    def score_fold(self, fold_fname):
         """
         Score the models from a fold on both test and training partitions
-        :param fold: the index of the current fold
         :param fold_fname: the model file containing the models for this fold
         :return:
         """
@@ -162,9 +180,11 @@ class CrossValidation:
 
     def majority_vote(self, models):
         """
-        Takes the top five models from each fold and does a majority voting. It scores the combined models on the whole dataset
+        Takes the top five models from each fold and does a majority voting.
+         It scores the combined models on the whole dataset
         :param models: An array containing the models from each fold
-        :return: ensemble_df: a Pandas dataframe containing the models with their individual scores and the combined score
+        :return: ensemble_df: a Pandas dataframe containing the models with
+        their individual scores and the combined score
         """
         model_df = pd.DataFrame(models, columns=["model"])
         model_eval = ModelEvaluator(self.session.target_feature)
