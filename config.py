@@ -27,3 +27,7 @@ CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_UR
                'CELERY_TASK_SERIALIZER': 'pickle', 'CELERY_ACCEPT_CONTENT': ['pickle']}
 
 DB_NAME = "mozi_snet"
+
+MOZI_URI = "https://mozi.ai/api/result"
+
+GRPC_PORT = "5002"

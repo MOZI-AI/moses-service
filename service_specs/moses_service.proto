@@ -9,7 +9,7 @@ message CrossValOptions {
 message AnalysisParameters {
     string mosesOpts = 1;
     CrossValOptions crossValOpts = 2;
-    string category = 3;
+    string target_feature = 3;
     string dataset = 4;
 }
 

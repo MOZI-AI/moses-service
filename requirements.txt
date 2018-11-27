@@ -10,5 +10,7 @@ pandas
 mlxtend
 mongomock
 pymongo
+pyyaml
 scikit-learn
 scipy
+redis

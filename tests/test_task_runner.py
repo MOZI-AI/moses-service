@@ -15,7 +15,7 @@ class TestTaskRunner(unittest.TestCase):
     def setUp(self):
         dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
         session_id = str(uuid.uuid4())
-        self.session = Session(session_id, moses_options, crossval_options, dataset)
+        self.session = Session(session_id, moses_options, crossval_options, dataset, "abcd")
         self.cwd = os.path.join(TEST_DATA_DIR, f"session_{session_id}")
 
     def test_start_analysis(self):

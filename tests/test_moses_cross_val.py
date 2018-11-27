@@ -16,7 +16,7 @@ class TestCrossValidation(unittest.TestCase):
     def setUp(self):
         dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
         session_id = str(uuid.uuid4())
-        self.session = Session(session_id, moses_options, crossval_options, dataset)
+        self.session = Session(session_id, moses_options, crossval_options, dataset, "abcd")
 
         self.train_file, self.test_file = os.path.join(TEST_DATA_DIR, "train_file"), os.path.join(TEST_DATA_DIR, "test_file")
         self.test_matrix = [[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1],
