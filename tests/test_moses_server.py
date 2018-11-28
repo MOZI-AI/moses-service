@@ -1,6 +1,5 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-
 import unittest
 from unittest.mock import patch, MagicMock
 from service_specs.moses_service_pb2_grpc import MosesServiceStub
@@ -8,14 +7,9 @@ import grpc
 from config import TEST_DATA_DIR, GRPC_PORT
 import os
 import mongomock
-
-
-mock = MagicMock()
-mock.apply_sync = None
-patcher = patch("task.task_runner.start_analysis", mock)
-patcher.start()
-
 from service.moses_service_server import serve
+from service.moses_service_client import run_analysis
+
 
 class TestMosesServer(unittest.TestCase):
     server = None
@@ -30,14 +24,18 @@ class TestMosesServer(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.server.stop(0)
-        patcher.stop()
 
     def setUp(self):
         self.channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
         self.stub = MosesServiceStub(self.channel)
 
-    def test_run_analysis(self):
-        from service.moses_service_client import run_analysis
+    def tearDown(self):
+        pass
+
+    @patch("service.moses_service_server.start_analysis")
+    def test_run_analysis(self, some_func):
+        some_func.appy_async = None
+        some_func.return_value = 0
         opts_file = os.path.join(TEST_DATA_DIR, "options.yaml")
         input_file = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
         result = run_analysis(self.stub, opts_file, input_file)

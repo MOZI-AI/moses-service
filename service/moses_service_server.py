@@ -10,8 +10,8 @@ from pymongo import MongoClient
 from config import DATASET_DIR, DB_NAME, MONGODB_URI, MOZI_URI, GRPC_PORT
 import uuid
 import os
-from task.task_runner import start_analysis
 import time
+from task.task_runner import start_analysis
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 

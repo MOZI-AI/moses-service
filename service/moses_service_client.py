@@ -35,7 +35,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 3:
         channel = grpc.insecure_channel(f"[::]:{GRPC_PORT}")
         stub = MosesServiceStub(channel)
-        result = start_analysis(stub, sys.argv[1], sys.argv[2])
+        result = run_analysis(stub, sys.argv[1], sys.argv[2])
         print(result)
     else:
         print(f"Usage: python {__file__} options.yaml <input_file>")
