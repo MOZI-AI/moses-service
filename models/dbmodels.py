@@ -31,7 +31,7 @@ class Session:
         db["sessions"].insert_one(data)
 
     def delete_session(self, db):
-        db['sessions'].delete_one({'id': self.id})
+        db["sessions"].delete_one({"id": self.id})
 
         # deleting a session also means deleting its dataset
         if os.path.exists(self.dataset):
@@ -41,8 +41,8 @@ class Session:
 
     def update_session(self, db):
         data = self.__dict__
-        db['sessions'].update_one({
-            'id': self.id
+        db["sessions"].update_one({
+            "id": self.id
         }, {
             "$set": data
         })
@@ -55,8 +55,27 @@ class Session:
         :param db: the db in which the session is found
         :return:
         """
-        result = db['sessions'].find_one({
-            'id': session_id
+        result = db["sessions"].find_one({
+            "id": session_id
+        })
+
+        if result:
+            session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"], result["mnemonic"] ,result["target_feature"])
+            session.status = result["status"]
+            session.message = result["message"]
+            session.start_time = result["start_time"]
+            session.end_time = result["end_time"]
+            session.progress = result["progress"]
+
+            return session
+
+        return None
+
+    @staticmethod
+    def get_session_mnemonic(mnemonic, db):
+
+        result = db["sessions"].find_one({
+            "mnemonic": mnemonic
         })
 
         if result:

@@ -49,19 +49,19 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
         :param session_id: the id of the associated session
         :return: cwd: the directory where the dataset file is saved
         """
-        cwd = os.path.join(DATASET_DIR, f"session_{str(session_id)}")
+        swd = os.path.join(DATASET_DIR, f"session_{session_id}")
 
-        if not os.path.exists(cwd):
-            os.makedirs(cwd)
+        if not os.path.exists(swd):
+            os.makedirs(swd)
 
-        file_path = os.path.join(cwd, f"{str(session_id)}.csv")
+        file_path = os.path.join(swd, f"{session_id}.csv")
 
         fb = bytearray(b_string.encode(encoding="utf-8"))
 
         with open(file_path, "wb") as fp:
             fp.write(fb)
 
-        return cwd, file_path
+        return swd, file_path
 
 
 def serve(db=None):

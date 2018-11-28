@@ -1,6 +1,8 @@
 celery
 coverage
 flask
+flask-cors
+flask-restful
 grpcio==1.12.1
 grpcio-tools==1.12.1
 in_place
