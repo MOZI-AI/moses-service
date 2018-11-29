@@ -11,3 +11,7 @@ before_install:
 
 script:
   - python -m unittest
+
+after_success:
+  - pip install codecov
+  - codecov
