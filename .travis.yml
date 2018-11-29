@@ -5,13 +5,10 @@ language: python
 services:
   - docker
 
-before_install:
+before_script:
   - docker build -t mozi/snet_service .
-  - docker run -it mozi/snet_service:latest /bin/bash
+  - docker run -it mozi/snet_service /bin/bash -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
 
 script:
-  - coverage run --rcfile=./.coveragerc -m unittest
-
-after_success:
   - pip install codecov
   - codecov
