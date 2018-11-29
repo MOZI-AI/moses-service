@@ -50,42 +50,24 @@ class CrossValidation:
         models on the test and training data
         :return:
         """
-        df = pd.read_csv(self.session.dataset)
-
-        x, y = df.values, df[self.session.target_feature].values
-        splits, test_size = self.session.crossval_options["folds"], self.session.crossval_options["testSize"]
-        cv = StratifiedShuffleSplit(n_splits=splits, test_size=test_size)
-
-        self.train_file, self.test_file = "train_file", "test_file"
-
+        x, cols, cv = self.split_dataset()
         i = 0
-        for train_index, test_index in cv.split(x, y):
+        for train_index, test_index in cv:
             seeds = self._generate_seeds(self.session.crossval_options["randomSeed"])
 
             x_train, x_test = x[train_index], x[test_index]
 
-            pd.DataFrame(x_train, columns=df.columns.values).to_csv(self.train_file, index=False)
+            pd.DataFrame(x_train, columns=cols).to_csv(self.train_file, index=False)
 
-            pd.DataFrame(x_test, columns=df.columns.values).to_csv(self.test_file, index=False)
+            pd.DataFrame(x_test, columns=cols).to_csv(self.test_file, index=False)
 
             files = []
 
+            for file in self.run_seeds(seeds, i):
+                files.append(file)
+
             fold_fname = f"fold_{i}.csv"
             self.fold_files.append(fold_fname)
-
-            for seed in seeds:
-                output_file = f"fold_{i}_seed_{seed}.csv"
-                files.append(output_file)
-                moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
-
-                moses_runner = MosesRunner(self.train_file, output_file, moses_options)
-                returncode, stdout, stderr = moses_runner.run_moses()
-
-                if returncode != 0:
-                    self.logger.error("Moses run into error: %s" % stderr.decode("utf-8"))
-                    raise ChildProcessError(stderr.decode("utf-8"))
-
-                moses_runner.format_combo(output_file)
 
             CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
@@ -108,6 +90,42 @@ class CrossValidation:
         feature_count_df = pd.DataFrame.from_dict(self.tree_transformer.fcount)
 
         feature_count_df.to_csv("feature_count.csv")
+
+    def split_dataset(self):
+        """
+        Helper method to split the dataset into train and test partitions
+        :return:
+        """
+        df = pd.read_csv(self.session.dataset)
+
+        x, y = df.values, df[self.session.target_feature].values
+        splits, test_size = self.session.crossval_options["folds"], self.session.crossval_options["testSize"]
+        cv = StratifiedShuffleSplit(n_splits=splits, test_size=test_size)
+
+        self.train_file, self.test_file = "train_file", "test_file"
+
+        return x, df.columns.values, cv.split(x, y)
+
+    def run_seeds(self, seeds, i):
+        """
+        Helper method to run MOSES on a train set using random seeds
+        :param seeds: The rand seed numbers
+        :param i: The current fold index
+        :return: file: the output file containing the MOSES models
+        """
+        for seed in seeds:
+            output_file = f"fold_{i}_seed_{seed}.csv"
+            moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
+
+            moses_runner = MosesRunner(self.train_file, output_file, moses_options)
+            returncode, stdout, stderr = moses_runner.run_moses()
+
+            if returncode != 0:
+                self.logger.error("Moses run into error: %s" % stderr.decode("utf-8"))
+                raise ChildProcessError(stderr.decode("utf-8"))
+
+            moses_runner.format_combo(output_file)
+            yield output_file
 
     def on_progress_update(self):
         """

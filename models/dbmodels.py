@@ -48,16 +48,24 @@ class Session:
         })
 
     @staticmethod
-    def get_session(session_id, db):
+    def get_session(db, session_id=None, mnemonic=None):
         """
-        Get a session using its id from a database
-        :param session_id: the id of the session
+        Get a session using its id or mnemonic from a database
         :param db: the db in which the session is found
+        :param session_id: the id of the session
+        :param mnemonic: the mnemonic value for the session derived from its uuid
         :return:
         """
-        result = db["sessions"].find_one({
-            "id": session_id
-        })
+        result = None
+        if session_id:
+            result = db["sessions"].find_one({
+                "id": session_id
+            })
+
+        elif mnemonic:
+            result = db["sessions"].find_one({
+                "mnemonic": mnemonic
+            })
 
         if result:
             session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"], result["mnemonic"] ,result["target_feature"])
@@ -69,23 +77,4 @@ class Session:
 
             return session
 
-        return None
-
-    @staticmethod
-    def get_session_mnemonic(mnemonic, db):
-
-        result = db["sessions"].find_one({
-            "mnemonic": mnemonic
-        })
-
-        if result:
-            session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"], result["mnemonic"] ,result["target_feature"])
-            session.status = result["status"]
-            session.message = result["message"]
-            session.start_time = result["start_time"]
-            session.end_time = result["end_time"]
-            session.progress = result["progress"]
-
-            return session
-
-        return None
+        return result

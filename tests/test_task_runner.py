@@ -25,7 +25,7 @@ class TestTaskRunner(unittest.TestCase):
 
         start_analysis(self.session, self.cwd, mock_db)
 
-        tmp_session = Session.get_session(self.session.id, mock_db)
+        tmp_session = Session.get_session(mock_db, session_id=self.session.id)
         self.assertEqual(tmp_session.status, 2)
         self.assertEqual(tmp_session.progress, 100)
 
@@ -36,7 +36,7 @@ class TestTaskRunner(unittest.TestCase):
 
         start_analysis(self.session, self.cwd, mock_db)
 
-        tmp_session = Session.get_session(self.session.id, mock_db)
+        tmp_session = Session.get_session(mock_db, session_id=self.session.id)
 
         self.assertEqual(tmp_session.status, -1)
 

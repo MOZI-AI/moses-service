@@ -18,7 +18,7 @@ class StatusApi(Resource):
 
     def get(self, id):
 
-        session = Session.get_session_mnemonic(id, self.db)
+        session = Session.get_session(self.db, mnemonic=id)
 
         if session:
             return {"status": session.status, "progress": session.progress, "start_time": session.start_time}, 200
@@ -34,7 +34,7 @@ class ResultApi(Resource):
 
     def get(self, id):
 
-        session = Session.get_session_mnemonic(id, self.db)
+        session = Session.get_session(self.db, mnemonic=id)
 
         if session.status == 2:
             swd = os.path.join(DATASET_DIR, f"session_{session.id}")
