@@ -5,9 +5,8 @@ language: python
 services:
   - docker
 
-before_install:
+before_script:
   - docker build -t mozi/snet_service .
-  - docker run -it mozi/snet_service:latest /bin/bash
 
 script:
   - coverage run --rcfile=./.coveragerc -m unittest
