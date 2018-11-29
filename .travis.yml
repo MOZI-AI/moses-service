@@ -7,10 +7,10 @@ services:
 
 before_install:
   - docker build -t mozi/snet_service .
-  - docker run -it mozi/snet_service:latest /bin/bash -c "python -m unittest"
+  - docker run -it mozi/snet_service:latest /bin/bash
 
 script:
-  - python -m unittest
+  - coverage run --rcfile=./.coveragerc -m unittest
 
 after_success:
   - pip install codecov

@@ -1,3 +1,6 @@
 [run]
+source=
+    /home/root/mozi_snet_service
 omit=
+    *site-packages*
     tests/*
