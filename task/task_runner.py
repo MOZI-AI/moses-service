@@ -2,10 +2,11 @@ __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 from celery import Celery
 from celery.utils.log import get_task_logger
-from pymongo import MongoClient
+import pymongo
 from config import MONGODB_URI, CELERY_OPTS, DB_NAME
 import time
 from crossval.moses_cross_val import CrossValidation
+from models.dbmodels import Session
 
 celery = Celery('mozi_snet', broker=CELERY_OPTS["CELERY_BROKER_URL"])
 celery.conf.update(CELERY_OPTS)
@@ -14,7 +15,7 @@ logger = get_task_logger(__name__)
 
 
 @celery.task
-def start_analysis(session, cwd, db=None):
+def start_analysis(**kwargs):
     """
     A celery task that runs the MOSES analysis
     :param session: The session object
@@ -22,8 +23,12 @@ def start_analysis(session, cwd, db=None):
     :param db: A reference to the mongo database
     :return:
     """
-    if not db:
-        db = MongoClient(MONGODB_URI)[DB_NAME]
+    db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
+
+    session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
+                      kwargs["dataset"], kwargs["mnemonic"], kwargs["target_feature"])
+
+    cwd = kwargs["cwd"]
 
     session.status = 1
     session.start_time = time.time()

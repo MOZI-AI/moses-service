@@ -4,7 +4,6 @@ import unittest
 from unittest.mock import patch, MagicMock
 import mongomock
 from webserver.apimain import setup
-from config import DB_NAME
 from models.dbmodels import Session
 
 class TestApi(unittest.TestCase):
@@ -24,7 +23,7 @@ class TestApi(unittest.TestCase):
         temp_session.progress = 40
 
         mock_db = mongomock.MongoClient().db
-        client.return_value.__getitem__.return_value = mock_db
+        client().__getitem__.return_value = mock_db
 
         temp_session.save(mock_db)
 
@@ -38,7 +37,7 @@ class TestApi(unittest.TestCase):
     def test_status_error(self, client):
 
         mock_db = mongomock.MongoClient().db
-        client.return_value.__getitem__.return_value = mock_db
+        client().__getitem__.return_value = mock_db
         mock_db.find_one.return_value = None
 
         resonse = self.app.get("/api/status/5abcd")
@@ -52,7 +51,7 @@ class TestApi(unittest.TestCase):
         temp_session = Session("abcd", "", "", "", "5abcd")
         temp_session.status = 2
         mock_db = mongomock.MongoClient().db
-        client.return_value.__getitem__.return_value = mock_db
+        client().__getitem__.return_value = mock_db
         temp_session.save(mock_db)
 
         make_archive.return_value = "Test Mock"

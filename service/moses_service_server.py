@@ -4,10 +4,8 @@ import grpc
 from service_specs.moses_service_pb2 import Result
 from service_specs import moses_service_pb2_grpc
 from concurrent import futures
-from models.dbmodels import Session
 from utils.url_encoder import encode
-from pymongo import MongoClient
-from config import DATASET_DIR, DB_NAME, MONGODB_URI, MOZI_URI, GRPC_PORT
+from config import DATASET_DIR, MOZI_URI, GRPC_PORT
 import uuid
 import os
 import time
@@ -18,12 +16,6 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
 
-    def __init__(self, db=None):
-        if db:
-            self.db = db
-        else:
-            self.db = MongoClient(MONGODB_URI)[DB_NAME]
-
     def StartAnalysis(self, request, context):
 
         crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize, "randomSeed": request.crossValOpts.randomSeed }
@@ -33,10 +25,8 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
         mnemonic = encode(session_id)
         cwd, file_path = self._write_dataset(dataset, session_id)
 
-        session = Session(str(session_id), moses_opts, crossval_opts, file_path, mnemonic, target_feature)
-        session.save(self.db)
-
-        start_analysis.apply_async(args=[session, cwd])
+        start_analysis.delay(id=session_id, moses_options=moses_opts, crossval_options=crossval_opts,
+                             dataset=file_path, mnemonic=mnemonic, target_feature=target_feature, cwd=cwd)
 
         url = f"{MOZI_URI}/{mnemonic}"
 
@@ -64,10 +54,10 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
         return swd, file_path
 
 
-def serve(db=None):
+def serve(port=GRPC_PORT):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    moses_service_pb2_grpc.add_MosesServiceServicer_to_server(MoziService(db), server)
-    server.add_insecure_port(f"[::]:{GRPC_PORT}")
+    moses_service_pb2_grpc.add_MosesServiceServicer_to_server(MoziService(), server)
+    server.add_insecure_port(f"[::]:{port}")
     return server
 
 

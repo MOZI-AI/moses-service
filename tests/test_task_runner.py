@@ -8,35 +8,53 @@ from config import TEST_DATA_DIR, moses_options, crossval_options
 import uuid
 from models.dbmodels import Session
 from task.task_runner import start_analysis
+from unittest.mock import patch
 
 
 class TestTaskRunner(unittest.TestCase):
 
     def setUp(self):
-        dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
-        session_id = str(uuid.uuid4())
-        self.session = Session(session_id, moses_options, crossval_options, dataset, "abcd")
-        self.cwd = os.path.join(TEST_DATA_DIR, f"session_{session_id}")
+        self.dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
+        self.session_id = str(uuid.uuid4())
+        self.cwd = os.path.join(TEST_DATA_DIR, f"session_{self.session_id}")
 
-    def test_start_analysis(self):
+    @patch("pymongo.MongoClient")
+    @patch("task.task_runner.CrossValidation")
+    def test_start_analysis(self, cross_val, client):
         mock_db = mongomock.MongoClient().db
+        client().__getitem__.return_value = mock_db
+        session = {
+            "id": self.session_id, "moses_options": moses_options, "crossval_options": crossval_options,
+            "dataset": self.dataset, "mnemonic": "abcdr4e", "target_feature": "case"
+        }
 
-        self.session.save(mock_db)
+        mock_db.sessions.insert_one(session)
+        session["cwd"] = self.cwd
+        cross_val.return_value.run_folds.return_value = "Run folds"
 
-        start_analysis(self.session, self.cwd, mock_db)
+        start_analysis(**session)
 
-        tmp_session = Session.get_session(mock_db, session_id=self.session.id)
+        tmp_session = Session.get_session(mock_db, session_id=self.session_id)
         self.assertEqual(tmp_session.status, 2)
         self.assertEqual(tmp_session.progress, 100)
 
-    def test_start_analysis_error_path(self):
+    @patch("pymongo.MongoClient")
+    @patch("task.task_runner.CrossValidation")
+    def test_start_analysis_error_path(self, cross_val, client):
         mock_db = mongomock.MongoClient().db
-        self.session.dataset = None
-        self.session.save(mock_db)
+        client().__getitem__.return_value = mock_db
+        session = {
+            "id": self.session_id, "moses_options": moses_options, "crossval_options": crossval_options,
+            "dataset": self.dataset, "mnemonic": "abcdr4e", "target_feature": "case"
+        }
 
-        start_analysis(self.session, self.cwd, mock_db)
+        mock_db.sessions.insert_one(session)
+        session["cwd"] = self.cwd
+        cross_val.side_effect = Exception("Mock exception")
 
-        tmp_session = Session.get_session(mock_db, session_id=self.session.id)
+        start_analysis(**session)
+
+        tmp_session = Session.get_session(mock_db, session_id=self.session_id)
 
         self.assertEqual(tmp_session.status, -1)
 
