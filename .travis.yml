@@ -6,9 +6,9 @@ services:
   - docker
 
 before_script:
-  - docker build -t mozi/snet_service .
-  - docker run -it mozi/snet_service /bin/bash -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
+  - docker-compose up -d
+  - docker exec moses_snet_service sh -c "pip install codecov"
 
 script:
-  - pip install codecov
-  - codecov
+  - docker exec moses_snet_service sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
+  - docker exec moses_snet_service sh -c "codecov"

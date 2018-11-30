@@ -1,0 +1,40 @@
+version: "3"
+services:
+  moses_service:
+      build: ./
+      container_name: moses_snet_service
+      links:
+        - mongo
+        - redis
+        - celery
+      ports:
+          - "5003:5003"
+
+      environment:
+          - MONGODB_URI=mongodb://mongo:27017/
+          - DATASETS_DIR=/home/root/datasets
+          - REDIS_URI=redis://redis:6379/0
+
+      working_dir: /home/root/mozi_snet_service
+
+      command: bash -c "python -m service.moses_service_server"
+
+
+  celery:
+      build: ./
+      environment:
+          - MONGODB_URI=mongodb://mongo:27017/
+          - DATASETS_DIR=/home/root/datasets
+          - REDIS_URI=redis://redis:6379/0
+
+      working_dir: /home/root/mozi_snet_service
+      command: bash -c "celery worker -l info -A task.task_runner.celery"
+      depends_on:
+        - mongo
+        - redis
+
+  mongo:
+      image: mongo
+
+  redis:
+      image: redis
