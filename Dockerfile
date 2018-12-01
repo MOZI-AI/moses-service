@@ -24,8 +24,7 @@ RUN pyenv virtualenv 3.6.5 general
 RUN pyenv global general
 
 #Mozi dataset directories
-RUN mkdir $HOME/mozi_datasets
-RUN mkdir $HOME/mozi_datasets/result
+RUN mkdir $HOME/datasets
 
 ENV CODE $HOME/mozi_snet_service
 RUN mkdir $CODE

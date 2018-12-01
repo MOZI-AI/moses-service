@@ -3,16 +3,39 @@ __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 from celery import Celery
 from celery.utils.log import get_task_logger
 import pymongo
-from config import MONGODB_URI, CELERY_OPTS, DB_NAME
+from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR
 import time
 from crossval.moses_cross_val import CrossValidation
 from models.dbmodels import Session
+import os
+import base64
 
 celery = Celery('mozi_snet', broker=CELERY_OPTS["CELERY_BROKER_URL"])
 celery.conf.update(CELERY_OPTS)
 
 logger = get_task_logger(__name__)
 
+
+def write_dataset(b_string, mnemonic):
+    """
+    Writes the dataset file and returns the directory it is saved in
+    :param b_string: the base64 encoded string of the dataset file
+    :param mnemonic: the mnemonic of the associated session
+    :return: cwd: the directory where the dataset file is saved
+    """
+    swd = os.path.join(DATASET_DIR, f"session_{mnemonic}")
+
+    if not os.path.exists(swd):
+        os.makedirs(swd)
+
+    file_path = os.path.join(swd, f"dataset.csv")
+
+    fb = base64.b64decode(b_string)
+
+    with open(file_path, "wb") as fp:
+        fp.write(fb)
+
+    return swd, file_path
 
 @celery.task
 def start_analysis(**kwargs):
@@ -25,10 +48,12 @@ def start_analysis(**kwargs):
     """
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
 
-    session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
-                      kwargs["dataset"], kwargs["mnemonic"], kwargs["target_feature"])
+    cwd, file_path = write_dataset(kwargs["dataset"], kwargs["mnemonic"])
 
-    cwd = kwargs["cwd"]
+    session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
+                      file_path, kwargs["mnemonic"], kwargs["target_feature"])
+
+    session.save(db)
 
     session.status = 1
     session.start_time = time.time()

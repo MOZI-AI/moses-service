@@ -2,9 +2,9 @@ celery
 coverage
 flask
 flask-cors
-flask-restful
 grpcio==1.12.1
 grpcio-tools==1.12.1
+gunicorn
 in_place
 lark-parser==0.5.5
 numpy
@@ -13,6 +13,6 @@ mlxtend
 mongomock
 pymongo
 pyyaml
+redis==2.10.6
 scikit-learn
 scipy
-redis

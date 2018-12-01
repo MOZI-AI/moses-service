@@ -10,8 +10,12 @@ import uuid
 import os
 import time
 from task.task_runner import start_analysis
+import logging
+import base64
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
+
+logger = logging.getLogger("mozi_snet")
 
 
 class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
@@ -23,35 +27,13 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
 
         session_id = uuid.uuid4()
         mnemonic = encode(session_id)
-        cwd, file_path = self._write_dataset(dataset, session_id)
 
         start_analysis.delay(id=session_id, moses_options=moses_opts, crossval_options=crossval_opts,
-                             dataset=file_path, mnemonic=mnemonic, target_feature=target_feature, cwd=cwd)
+                             dataset=dataset, mnemonic=mnemonic, target_feature=target_feature)
 
-        url = f"{MOZI_URI}/{mnemonic}"
+        url = f"{MOZI_URI}/status/{mnemonic}"
 
         return Result(resultUrl=url, description="Analysis started")
-
-    def _write_dataset(self, b_string, session_id):
-        """
-        Writes the dataset file and returns the directory it is saved in
-        :param b_string: the base64 encoded string of the dataset file
-        :param session_id: the id of the associated session
-        :return: cwd: the directory where the dataset file is saved
-        """
-        swd = os.path.join(DATASET_DIR, f"session_{session_id}")
-
-        if not os.path.exists(swd):
-            os.makedirs(swd)
-
-        file_path = os.path.join(swd, f"{session_id}.csv")
-
-        fb = bytearray(b_string.encode(encoding="utf-8"))
-
-        with open(file_path, "wb") as fp:
-            fp.write(fb)
-
-        return swd, file_path
 
 
 def serve(port=GRPC_PORT):
@@ -66,6 +48,6 @@ if __name__ == "__main__":
     server.start()
     try:
         while True:
-            time.sleep(_ONE_DAY_IN_SECONDS)
+            time.sleep(8)
     except KeyboardInterrupt:
         server.stop(0)

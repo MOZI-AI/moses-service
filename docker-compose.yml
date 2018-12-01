@@ -9,15 +9,19 @@ services:
         - celery
       ports:
           - "5003:5003"
+          - "80:80"
 
       environment:
           - MONGODB_URI=mongodb://mongo:27017/
           - DATASETS_DIR=/home/root/datasets
           - REDIS_URI=redis://redis:6379/0
 
+      volumes:
+          - dataset-volume:/home/root/datasets
+
       working_dir: /home/root/mozi_snet_service
 
-      command: bash -c "python -m service.moses_service_server"
+      command: bash -c "python -m service.moses_service_server && gunicorn -b 0.0.0.0:80 webserver.apimain:app"
 
 
   celery:
@@ -26,6 +30,9 @@ services:
           - MONGODB_URI=mongodb://mongo:27017/
           - DATASETS_DIR=/home/root/datasets
           - REDIS_URI=redis://redis:6379/0
+
+      volumes:
+          - dataset-volume:/home/root/datasets
 
       working_dir: /home/root/mozi_snet_service
       command: bash -c "celery worker -l info -A task.task_runner.celery"
@@ -38,3 +45,6 @@ services:
 
   redis:
       image: redis
+
+volumes:
+  dataset-volume:

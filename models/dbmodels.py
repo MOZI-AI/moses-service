@@ -54,7 +54,7 @@ class Session:
         :param db: the db in which the session is found
         :param session_id: the id of the session
         :param mnemonic: the mnemonic value for the session derived from its uuid
-        :return:
+        :return: A session object
         """
         result = None
         if session_id:

@@ -13,7 +13,7 @@ def read_file(location):
     with open(location, "rb") as fp:
         content = fp.read()
 
-    return base64.b64encode(content).decode()
+    return base64.b64encode(content)
 
 
 def run_analysis(stub, opts_file, file_path):
@@ -33,7 +33,7 @@ def run_analysis(stub, opts_file, file_path):
 if __name__ == "__main__":
 
     if len(sys.argv) == 3:
-        channel = grpc.insecure_channel(f"[::]:{GRPC_PORT}")
+        channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
         stub = MosesServiceStub(channel)
         result = run_analysis(stub, sys.argv[1], sys.argv[2])
         print(result)

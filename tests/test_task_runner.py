@@ -9,14 +9,19 @@ import uuid
 from models.dbmodels import Session
 from task.task_runner import start_analysis
 from unittest.mock import patch
-
+import base64
 
 class TestTaskRunner(unittest.TestCase):
 
-    def setUp(self):
-        self.dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
-        self.session_id = str(uuid.uuid4())
-        self.cwd = os.path.join(TEST_DATA_DIR, f"session_{self.session_id}")
+    @classmethod
+    def setUpClass(cls):
+        dataset = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
+        with open(dataset, "rb") as fp:
+            content = fp.read()
+
+        cls.dataset =  base64.b64encode(content)
+        cls.session_id = str(uuid.uuid4())
+        cls.cwd = os.path.join(TEST_DATA_DIR, f"session_{cls.session_id}")
 
     @patch("pymongo.MongoClient")
     @patch("task.task_runner.CrossValidation")
@@ -29,7 +34,6 @@ class TestTaskRunner(unittest.TestCase):
         }
 
         mock_db.sessions.insert_one(session)
-        session["cwd"] = self.cwd
         cross_val.return_value.run_folds.return_value = "Run folds"
 
         start_analysis(**session)
@@ -49,18 +53,18 @@ class TestTaskRunner(unittest.TestCase):
         }
 
         mock_db.sessions.insert_one(session)
-        session["cwd"] = self.cwd
         cross_val.side_effect = Exception("Mock exception")
 
-        start_analysis(**session)
+        self.assertRaises(Exception, start_analysis(**session))
 
         tmp_session = Session.get_session(mock_db, session_id=self.session_id)
 
         self.assertEqual(tmp_session.status, -1)
 
-    def tearDown(self):
-        if os.path.exists(self.cwd):
-            shutil.rmtree(self.cwd)
+    @classmethod
+    def tearDownClass(cls):
+        if os.path.exists(cls.cwd):
+            shutil.rmtree(cls.cwd)
 
 
 if __name__ == "__main__":
