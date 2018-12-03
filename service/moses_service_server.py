@@ -4,10 +4,8 @@ import logging
 import time
 import uuid
 from concurrent import futures
-
 import grpc
-
-from config import MOZI_URI, GRPC_PORT
+from config import MOZI_URI, GRPC_PORT, setup_logging
 from service_specs import moses_service_pb2_grpc
 from service_specs.moses_service_pb2 import Result
 from task.task_runner import start_analysis
@@ -16,15 +14,16 @@ import sys
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-logger = logging.getLogger("mozi_snet")
-
 
 class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
 
     def StartAnalysis(self, request, context):
+        logger = logging.getLogger("mozi_snet")
 
         crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize, "randomSeed": request.crossValOpts.randomSeed }
         moses_opts, dataset, target_feature = request.mosesOpts, request.dataset, request.target_feature
+
+        logger.info(f"Received request with Moses Options: {moses_opts}\n Cross Validation Options: {crossval_opts}\n")
 
         session_id = uuid.uuid4()
         mnemonic = encode(session_id)
@@ -33,7 +32,6 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
                              dataset=dataset, mnemonic=mnemonic, target_feature=target_feature)
 
         url = f"{MOZI_URI}/status/{mnemonic}"
-
         return Result(resultUrl=url, description="Analysis started")
 
 
@@ -45,7 +43,7 @@ def serve(port=GRPC_PORT):
 
 
 if __name__ == "__main__":
-
+    setup_logging()
     if len(sys.argv) == 2:
         server = serve(sys.argv[1])
     else:

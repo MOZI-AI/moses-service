@@ -11,7 +11,6 @@ from crossval.model_evaluator import ModelEvaluator
 import math
 from utils.feature_count import combo_parser, ComboTreeTransform
 from scipy import stats
-from celery.utils.log import get_task_logger
 
 
 class CrossValidation:
@@ -28,8 +27,7 @@ class CrossValidation:
         self.session = session
         self.cwd = cwd
         self.db = db
-        # self.logger = logging.getLogger("mozi_snet")
-        self.logger = get_task_logger(__name__)
+        self.logger = logging.getLogger("mozi_snet")
         self.train_file, self.test_file = None, None
         self.fold_files = []
         self._set_dir()

@@ -8,7 +8,6 @@ from flask_cors import CORS
 import pymongo
 from config import MONGODB_URI, DB_NAME, DATASET_DIR
 
-
 app = Flask(__name__)
 CORS(app)
 

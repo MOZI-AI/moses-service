@@ -2,18 +2,18 @@ __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 from celery import Celery
 from celery.utils.log import get_task_logger
+import logging
 import pymongo
-from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR
+from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR, setup_logging
 import time
 from crossval.moses_cross_val import CrossValidation
 from models.dbmodels import Session
 import os
 import base64
 
+
 celery = Celery('mozi_snet', broker=CELERY_OPTS["CELERY_BROKER_URL"])
 celery.conf.update(CELERY_OPTS)
-
-logger = get_task_logger(__name__)
 
 
 def write_dataset(b_string, mnemonic):
@@ -46,7 +46,9 @@ def start_analysis(**kwargs):
     :param db: A reference to the mongo database
     :return:
     """
+    setup_logging()
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
+    logger = logging.getLogger("mozi_snet")
 
     cwd, file_path = write_dataset(kwargs["dataset"], kwargs["mnemonic"])
 
