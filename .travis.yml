@@ -11,4 +11,3 @@ before_script:
 
 script:
   - docker exec moses_snet_service sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
-  - docker exec moses_snet_service sh -c "codecov"
