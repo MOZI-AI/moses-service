@@ -34,7 +34,7 @@ class CrossValidation:
         self.fold_files = []
         self._set_dir()
 
-        self.total_runs = self.session.crossval_options["folds"] + 1
+        self.total_runs = (self.session.crossval_options["folds"] * self.session.crossval_options["randomSeed"]) + 1
         self.runs = 0
 
         self.tree_transformer = ComboTreeTransform()
@@ -78,7 +78,6 @@ class CrossValidation:
             self.count_features(fold_fname)
 
             i += 1
-            self.runs += 1
 
             self.on_progress_update()
 
@@ -128,6 +127,7 @@ class CrossValidation:
                 raise ChildProcessError(stderr.decode("utf-8"))
 
             moses_runner.format_combo(output_file)
+            self.runs += 1
             yield output_file
 
     def on_progress_update(self):

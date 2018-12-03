@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN sudo apt-get update
 
 RUN sudo apt-get install -y git wget curl vim man
-RUN sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev
+RUN sudo apt-get install -y build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev libzmq-dev libevent-dev python-dev
 
 ENV HOME /home/root
 

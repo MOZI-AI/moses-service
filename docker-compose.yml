@@ -21,7 +21,7 @@ services:
 
       working_dir: /home/root/mozi_snet_service
 
-      command: bash -c "python -m service.moses_service_server && gunicorn -b 0.0.0.0:80 webserver.apimain:app"
+      command: bash -c "circusd --log-level debug circus.ini"
 
 
   celery:

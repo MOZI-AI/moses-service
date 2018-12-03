@@ -56,6 +56,7 @@ def start_analysis(**kwargs):
     session.save(db)
 
     session.status = 1
+    session.progress = 1
     session.start_time = time.time()
     session.update_session(db)
 

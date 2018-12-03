@@ -1,4 +1,5 @@
 celery
+circus
 coverage
 flask
 flask-cors

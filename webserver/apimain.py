@@ -27,8 +27,10 @@ def check_status(mnemonic):
     session = Session.get_session(db, mnemonic=mnemonic)
 
     if session:
-        return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time,
-                "message": session.message}), 200
+        if session.status == 2 or session.status == -1:
+            return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time, "end_time": session.end_time, "message": session.message}), 200
+
+        return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time, "message": session.message}), 200
 
     else:
         return jsonify({"response": "Session not found"}), 404

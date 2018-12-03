@@ -1,17 +1,18 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-import grpc
-from service_specs.moses_service_pb2 import Result
-from service_specs import moses_service_pb2_grpc
-from concurrent import futures
-from utils.url_encoder import encode
-from config import DATASET_DIR, MOZI_URI, GRPC_PORT
-import uuid
-import os
-import time
-from task.task_runner import start_analysis
 import logging
-import base64
+import time
+import uuid
+from concurrent import futures
+
+import grpc
+
+from config import MOZI_URI, GRPC_PORT
+from service_specs import moses_service_pb2_grpc
+from service_specs.moses_service_pb2 import Result
+from task.task_runner import start_analysis
+from utils.url_encoder import encode
+import sys
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -44,7 +45,11 @@ def serve(port=GRPC_PORT):
 
 
 if __name__ == "__main__":
-    server = serve()
+
+    if len(sys.argv) == 2:
+        server = serve(sys.argv[1])
+    else:
+        server = serve()
     server.start()
     try:
         while True:
