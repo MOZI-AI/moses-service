@@ -26,7 +26,7 @@ export class AnalysisResults extends React.Component {
   }
 
   componentDidMount() {
-    fetch(SERVER_ADDRESS + "status/" + window.location.href.split("/").pop())
+    fetch(SERVER_ADDRESS + "status/" + window.location.href.split("?id=").pop())
       .then(response => response.json())
       .then(response => {
         this.setState({
