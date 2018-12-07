@@ -4,4 +4,4 @@ export const AnalysisStatus = {
   ERROR: -1
 };
 
-export const SERVER_ADDRESS = "http://49a202fe.ngrok.io/";
+export const SERVER_ADDRESS = "https://mozi.ai/";
