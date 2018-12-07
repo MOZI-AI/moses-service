@@ -31,7 +31,7 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
         start_analysis.delay(id=session_id, moses_options=moses_opts, crossval_options=crossval_opts,
                              dataset=dataset, mnemonic=mnemonic, target_feature=target_feature)
 
-        url = f"{MOZI_URI}/status/{mnemonic}"
+        url = f"{MOZI_URI}/?id={mnemonic}"
         return Result(resultUrl=url, description="Analysis started")
 
 
