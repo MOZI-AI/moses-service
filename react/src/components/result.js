@@ -1,0 +1,78 @@
+import React from "react";
+import { Progress, Button, Icon, Alert, Collapse } from "antd";
+import moment from "moment";
+
+export const Result = props => {
+  const { progress, status, start, end, message, downloadResult } = props;
+  const progressBarProps = {
+    percent: progress
+  };
+  if (status === AnalysisStatus.ERROR) {
+    progressBarProps["status"] = "exception";
+  }
+  const progressBar = <Progress {...progressBarProps} />;
+
+  return (
+    <React.Fragment>
+      <img src="assets/mozi_globe.png" style={{ width: "100px" }} />
+      <h2 style={{ marginBottom: "30px" }}>Mozi service results</h2>
+
+      {status === AnalysisStatus.ACTIVE && (
+        <span>
+          Analysis started
+          {" " + moment(start * 1000).fromNow()}
+          {progressBar}
+          <p style={{ marginTop: "15px" }}>
+            The analysis might take a while depending on the size of the dataset
+            and analysis parameter values.
+          </p>
+        </span>
+      )}
+
+      {status === AnalysisStatus.COMPLETED && (
+        <span>
+          Analysis completed after
+          {" " + moment.duration(moment(end).diff(moment(start))).humanize()}
+          {progressBar}
+          <Button
+            type="primary"
+            onClick={downloadResult}
+            style={{ marginTop: "15px" }}
+          >
+            <Icon type="download" />
+            Download analysis results
+          </Button>
+        </span>
+      )}
+
+      {status === AnalysisStatus.ERROR && (
+        <Alert
+          justify="left"
+          type="error"
+          message={
+            "Analysis failed after " +
+            moment.duration(moment(end).diff(moment(start))).humanize()
+          }
+          description={
+            <Collapse
+              bordered={false}
+              style={{
+                background: "none",
+                boxShadow: "none",
+                textAlign: "left"
+              }}
+            >
+              <Collapse.Panel
+                style={{ backgroundColor: "#f8d8d7" }}
+                header="Show stacktrace"
+                key="1"
+              >
+                {message}
+              </Collapse.Panel>
+            </Collapse>
+          }
+        />
+      )}
+    </React.Fragment>
+  );
+};

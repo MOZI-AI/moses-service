@@ -1,22 +1,14 @@
 import React from "react";
-import {
-  Button,
-  Icon,
-  Alert,
-  Row,
-  Col,
-  message,
-  Progress,
-  Spin,
-  Collapse
-} from "antd";
+import { Row, Col, message, Alert } from "antd";
 import { AnalysisStatus, SERVER_ADDRESS } from "../utils";
-import * as moment from "moment";
+import { Result } from "./result";
+import { Loader } from "./loader";
 
 export class AnalysisResults extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      analysisId: null,
       analysisProgress: 0,
       analysisStatus: null,
       analysisStartTime: null,
@@ -26,10 +18,15 @@ export class AnalysisResults extends React.Component {
   }
 
   componentDidMount() {
-    fetch(SERVER_ADDRESS + "status/" + window.location.href.split("?id=").pop())
+    const id = this.getQueryVariable("id");
+    if (!id) {
+      return;
+    }
+    fetch(SERVER_ADDRESS + "status/" + id)
       .then(response => response.json())
       .then(response => {
         this.setState({
+          analysisId: id,
           analysisStatus: response.status,
           analysisProgress: response.progress,
           analysisStartTime: response.start_time,
@@ -37,10 +34,6 @@ export class AnalysisResults extends React.Component {
           analysisStatusMessage: response.message
         });
       });
-  }
-
-  componentDidUpdate() {
-    console.log(this.state);
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -55,120 +48,41 @@ export class AnalysisResults extends React.Component {
 
   downloadResult() {
     window.open(
-      SERVER_ADDRESS + "result/" + window.location.href.split("/").pop(),
+      SERVER_ADDRESS + "result/" + this.getQueryVariable("id"),
       "_blank"
     );
   }
 
-  renderLoader() {
-    return (
-      <React.Fragment>
-        <Spin style={{ marginRight: "15px" }} />{" "}
-        <span> Fetching results ...</span>
-      </React.Fragment>
-    );
-  }
-
-  renderResults() {
-    const {
-      analysisProgress,
-      analysisStatus,
-      analysisStartTime,
-      analysisEndTime
-    } = this.state;
-    const progressAttributes = {
-      percent: analysisProgress
-    };
-    if (analysisStatus === AnalysisStatus.ACTIVE) {
-      progressAttributes["status"] = "active";
-    } else if (analysisStatus === AnalysisStatus.ERROR) {
-      progressAttributes["status"] = "exception";
+  getQueryVariable(variable) {
+    const vars = window.location.search.substring(1).split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] == variable) {
+        return pair[1];
+      }
     }
-
-    return (
-      <React.Fragment>
-        <img src="assets/mozi_globe.png" style={{ width: "100px" }} />
-        <h2 style={{ marginBottom: "30px" }}>Mozi service results</h2>
-
-        {analysisStatus === AnalysisStatus.ACTIVE && (
-          <span>
-            Analysis started
-            {" " + moment(analysisStartTime * 1000).fromNow()}
-          </span>
-        )}
-
-        {analysisStatus === AnalysisStatus.COMPLETED && (
-          <span>
-            Analysis completed after
-            {" " +
-              moment
-                .duration(
-                  moment(analysisEndTime).diff(moment(analysisStartTime))
-                )
-                .humanize()}
-          </span>
-        )}
-
-        {analysisStatus !== AnalysisStatus.ERROR && (
-          <Progress {...progressAttributes} style={{ marginBottom: "15px" }} />
-        )}
-
-        {analysisStatus === AnalysisStatus.ACTIVE && (
-          <p>
-            The analysis might take a while depending on the size of the dataset
-            and analysis parameter values.
-          </p>
-        )}
-        {analysisStatus === AnalysisStatus.COMPLETED && (
-          <Button type="primary" onClick={this.downloadResult}>
-            <Icon type="download" />
-            Download analysis results
-          </Button>
-        )}
-        {analysisStatus === AnalysisStatus.ERROR && (
-          <Alert
-            justify="left"
-            type="error"
-            message={
-              "Analysis failed after " +
-              moment
-                .duration(
-                  moment(analysisEndTime).diff(moment(analysisStartTime))
-                )
-                .humanize()
-            }
-            description={
-              <Collapse
-                bordered={false}
-                style={{
-                  background: "none",
-                  boxShadow: "none",
-                  textAlign: "left"
-                }}
-              >
-                <Collapse.Panel
-                  style={{ backgroundColor: "#f8d8d7" }}
-                  header="Show stacktrace"
-                  key="1"
-                >
-                  {this.state.analysisStatusMessage}
-                </Collapse.Panel>
-              </Collapse>
-            }
-          />
-        )}
-      </React.Fragment>
-    );
+    return null;
   }
 
   render() {
+    const progressProps = {
+      progress: this.state.analysisProgress,
+      status: this.state.analysisStatus,
+      start: this.state.analysisStartTime,
+      end: this.state.analysisEndTime,
+      message: this.state.message,
+      downloadResult: this.downloadResult
+    };
+
     return (
       <React.Fragment>
-        <Row type="flex" justify="center" style={{ padding: "75px" }}>
-          <Col span={8} style={{ textAlign: "center" }}>
-            {this.state.analysisStatus
-              ? this.renderResults()
-              : this.renderLoader()}
+        <Row type="flex" justify="center" style={{paddingTop: '30px'}}>
+          <Col span={8} style={{ textAlign: "center" }}>          
+            {this.state.analysisStatus ? (
+              <Result {...progressProps} />
+            ) : this.state.id? (
+              <Loader />
+            ): <Alert type="warning" message="It seems there is a problem with your request. Please make sure the URL is correct." />}
           </Col>
         </Row>
       </React.Fragment>
