@@ -1,6 +1,7 @@
 import React from "react";
 import { Progress, Button, Icon, Alert, Collapse } from "antd";
 import moment from "moment";
+import {AnalysisStatus} from "../utils"
 
 export const Result = props => {
   const { progress, status, start, end, message, downloadResult } = props;
@@ -14,7 +15,7 @@ export const Result = props => {
 
   return (
     <React.Fragment>
-      <img src="assets/mozi_globe.png" style={{ width: "100px" }} />
+      <img src="../assets/mozi_globe.png" style={{ width: "100px" }} />
       <h2 style={{ marginBottom: "30px" }}>Mozi service results</h2>
 
       {status === AnalysisStatus.ACTIVE && (

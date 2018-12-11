@@ -18,7 +18,7 @@ export class AnalysisResults extends React.Component {
   }
 
   componentDidMount() {
-    const id = this.getQueryVariable("id");
+    const id = AnalysisResults.getQueryVariable("id");
     if (!id) {
       return;
     }
@@ -48,12 +48,12 @@ export class AnalysisResults extends React.Component {
 
   downloadResult() {
     window.open(
-      SERVER_ADDRESS + "result/" + this.getQueryVariable("id"),
+      SERVER_ADDRESS + "result/" + AnalysisResults.getQueryVariable("id"),
       "_blank"
     );
   }
 
-  getQueryVariable(variable) {
+  static getQueryVariable(variable) {
     const vars = window.location.search.substring(1).split("&");
     for (var i = 0; i < vars.length; i++) {
       var pair = vars[i].split("=");

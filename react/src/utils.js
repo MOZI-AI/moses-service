@@ -4,4 +4,4 @@ export const AnalysisStatus = {
   ERROR: -1
 };
 
-export const SERVER_ADDRESS = "https://moses_snet_service:5000/";
+export const SERVER_ADDRESS = "http://localhost:5000/";

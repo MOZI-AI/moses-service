@@ -9,7 +9,7 @@ module.exports = {
 
   output: {
     path: paths.outPath,
-    filename: "bundle.[chunkhash:8].js"
+    filename: "bundle.js"
   },
 
   devtool: "source-map",
@@ -68,7 +68,6 @@ module.exports = {
   },
 
   plugins: [
-    // TODO Remove this if there is no need for it
     new HtmlWebpackPlugin({
       inject: true,
       template: path.join(paths.srcPath, "index.html"),
