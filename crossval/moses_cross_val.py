@@ -251,7 +251,8 @@ class CrossValidation:
         for file in files[1:]:
             dfs.append(pd.read_csv(file))
 
-        df1.append(dfs)
+        if len(dfs) > 0:
+            df1.append(dfs)
 
         df1.to_csv(fold_file, index=False)
 

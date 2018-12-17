@@ -1,7 +1,7 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 from celery import Celery
-from celery.utils.log import get_task_logger
+import traceback
 import logging
 import pymongo
 from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR, setup_logging
@@ -73,7 +73,7 @@ def start_analysis(**kwargs):
     except Exception as e:
         session.status = -1
         session.message = e.__str__()
-        logger.error(f"Task failed with {e.__str__()}")
+        logger.error(f"Task failed with {traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)}")
 
     finally:
         session.end_time = time.time()

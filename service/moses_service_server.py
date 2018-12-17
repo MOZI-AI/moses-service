@@ -14,7 +14,6 @@ import sys
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
-
 class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
 
     def StartAnalysis(self, request, context):
@@ -36,7 +35,10 @@ class MoziService(moses_service_pb2_grpc.MosesServiceServicer):
 
 
 def serve(port=GRPC_PORT):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=[
+          ('grpc.max_send_message_length', -1),
+          ('grpc.max_receive_message_length', -1)
+    ])
     moses_service_pb2_grpc.add_MosesServiceServicer_to_server(MoziService(), server)
     server.add_insecure_port(f"[::]:{port}")
     return server
