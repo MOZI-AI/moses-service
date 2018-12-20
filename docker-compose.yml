@@ -6,9 +6,10 @@ services:
       links:
         - mongo
         - redis
+        - frontend
       ports:
           - "5003:5003"
-          - "80:80"
+          - "5000:5000"
 
       environment:
           - MONGODB_URI=mongodb://mongo:27017/
@@ -19,7 +20,12 @@ services:
 
       command: bash -c "circusd --log-level debug circus.ini"
 
+  frontend:
+      build: react/
+      container_name: react-app
 
+      ports:
+        - "80:80"
   mongo:
       image: mongo
 

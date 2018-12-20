@@ -1,6 +1,6 @@
 import React from "react";
 import { Row, Col, message, Alert } from "antd";
-import { AnalysisStatus, SERVER_ADDRESS } from "../utils";
+import { AnalysisStatus, SERVER_ADDRESS, getQueryVariable } from "../utils";
 import { Result } from "./result";
 import { Loader } from "./loader";
 
@@ -8,30 +8,33 @@ export class AnalysisResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      analysisId: this.getQueryVariable("id"),
+      analysisId: null,
       analysisProgress: 0,
       analysisStatus: null,
       analysisStartTime: null,
       analysisEndTime: null,
-      analysisStatusMessage: null
+      analysisStatusMessage: null,
+      fetchingResult: false
     };
+    this.downloadResult = this.downloadResult.bind(this);
   }
 
   componentDidMount() {
-    const id = this.state.analysisId;
+    const id = getQueryVariable("id");
     if (!id) {
       return;
     }
+    this.setState({ analysisId: id, fetchingResult: true });
     fetch(SERVER_ADDRESS + "status/" + id)
       .then(response => response.json())
       .then(response => {
         this.setState({
-          analysisId: id,
           analysisStatus: response.status,
           analysisProgress: response.progress,
           analysisStartTime: response.start_time,
           analysisEndTime: response.end_time,
-          analysisStatusMessage: response.message
+          analysisStatusMessage: response.message,
+          fetchingResult: false
         });
       });
   }
@@ -47,21 +50,7 @@ export class AnalysisResult extends React.Component {
   }
 
   downloadResult() {
-    window.open(
-      SERVER_ADDRESS + "result/" + this.getQueryVariable("id"),
-      "_blank"
-    );
-  }
-
-  getQueryVariable(variable) {
-    const vars = window.location.search.substring(1).split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      if (pair[0] == variable) {
-        return pair[1];
-      }
-    }
-    return null;
+    window.open(SERVER_ADDRESS + "result/" + this.state.analysisId, "_blank");
   }
 
   render() {
@@ -76,15 +65,26 @@ export class AnalysisResult extends React.Component {
 
     return (
       <React.Fragment>
-        <Row type="flex" justify="center" style={{ paddingTop: "30px" }}>
+        <Row type="flex" justify="center" style={{ paddingTop: "90px" }}>
           <Col span={8} style={{ textAlign: "center" }}>
             {this.state.analysisStatus ? (
               <Result {...progressProps} />
             ) : this.state.analysisId ? (
-              <Loader />
+              this.state.fetchingResult ? (
+                <Loader />
+              ) : (
+                <Alert
+                  type="error"
+                  message={
+                    'Session with ID "' +
+                    this.state.analysisId +
+                    '" could not be found. Please make sure the session ID is correct and try again.'
+                  }
+                />
+              )
             ) : (
               <Alert
-                type="warning"
+                type="error"
                 message="It seems there is a problem with your request. Please make sure the URL is correct."
               />
             )}
