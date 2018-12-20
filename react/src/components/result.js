@@ -1,6 +1,7 @@
 import React from "react";
 import { Progress, Button, Icon, Alert, Collapse } from "antd";
 import moment from "moment";
+import { AnalysisStatus } from "../utils";
 
 export const Result = props => {
   const { progress, status, start, end, message, downloadResult } = props;

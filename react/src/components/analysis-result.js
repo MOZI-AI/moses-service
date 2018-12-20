@@ -4,11 +4,11 @@ import { AnalysisStatus, SERVER_ADDRESS } from "../utils";
 import { Result } from "./result";
 import { Loader } from "./loader";
 
-export class AnalysisResults extends React.Component {
+export class AnalysisResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      analysisId: null,
+      analysisId: this.getQueryVariable("id"),
       analysisProgress: 0,
       analysisStatus: null,
       analysisStartTime: null,
@@ -18,7 +18,7 @@ export class AnalysisResults extends React.Component {
   }
 
   componentDidMount() {
-    const id = this.getQueryVariable("id");
+    const id = this.state.analysisId;
     if (!id) {
       return;
     }
@@ -70,19 +70,24 @@ export class AnalysisResults extends React.Component {
       status: this.state.analysisStatus,
       start: this.state.analysisStartTime,
       end: this.state.analysisEndTime,
-      message: this.state.message,
+      message: this.state.analysisStatusMessage,
       downloadResult: this.downloadResult
     };
 
     return (
       <React.Fragment>
-        <Row type="flex" justify="center" style={{paddingTop: '30px'}}>
-          <Col span={8} style={{ textAlign: "center" }}>          
+        <Row type="flex" justify="center" style={{ paddingTop: "30px" }}>
+          <Col span={8} style={{ textAlign: "center" }}>
             {this.state.analysisStatus ? (
               <Result {...progressProps} />
-            ) : this.state.id? (
+            ) : this.state.analysisId ? (
               <Loader />
-            ): <Alert type="warning" message="It seems there is a problem with your request. Please make sure the URL is correct." />}
+            ) : (
+              <Alert
+                type="warning"
+                message="It seems there is a problem with your request. Please make sure the URL is correct."
+              />
+            )}
           </Col>
         </Row>
       </React.Fragment>
