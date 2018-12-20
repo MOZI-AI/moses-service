@@ -1,5 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { AnalysisResults } from "./components/analysis-results";
+import { AnalysisResult } from "./components/analysis-result";
 
-ReactDOM.render(<AnalysisResults />, document.getElementById("app"));
+ReactDOM.render(<AnalysisResult />, document.getElementById("app"));

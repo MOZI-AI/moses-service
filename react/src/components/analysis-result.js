@@ -4,7 +4,7 @@ import { AnalysisStatus, SERVER_ADDRESS, getQueryVariable } from "../utils";
 import { Result } from "./result";
 import { Loader } from "./loader";
 
-export class AnalysisResults extends React.Component {
+export class AnalysisResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +59,7 @@ export class AnalysisResults extends React.Component {
       status: this.state.analysisStatus,
       start: this.state.analysisStartTime,
       end: this.state.analysisEndTime,
-      message: this.state.message,
+      message: this.state.analysisStatusMessage,
       downloadResult: this.downloadResult
     };
 
