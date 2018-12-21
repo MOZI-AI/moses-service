@@ -2,23 +2,20 @@ import React from "react";
 import { Progress, Button, Icon, Alert, Collapse } from "antd";
 import moment from "moment";
 import { AnalysisStatus } from "../utils";
-import logo from "../assets/mozi_globe.png";
 
 export const Result = props => {
   const { progress, status, start, end, message, downloadResult } = props;
   const progressBarProps = {
     percent: progress
   };
-  if (status === AnalysisStatus.ERROR) {
-    progressBarProps["status"] = "exception";
+  if (status === AnalysisStatus.ACTIVE) {
+    progressBarProps["status"] = "active";
   }
+
   const progressBar = <Progress {...progressBarProps} />;
 
   return (
     <React.Fragment>
-      <img src={logo} style={{ width: "100px" }} />
-      <h2 style={{ marginBottom: "30px" }}>Mozi service results</h2>
-
       {status === AnalysisStatus.ACTIVE && (
         <span>
           Analysis started
@@ -37,6 +34,7 @@ export const Result = props => {
           {" " + moment.duration(moment(end).diff(moment(start))).humanize()}
           {progressBar}
           <Button
+            id="downloadAnalysisResult"
             type="primary"
             onClick={downloadResult}
             style={{ marginTop: "15px" }}
@@ -49,6 +47,7 @@ export const Result = props => {
 
       {status === AnalysisStatus.ERROR && (
         <Alert
+          id="errorMessage"
           justify="left"
           type="error"
           message={

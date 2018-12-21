@@ -7,7 +7,7 @@ export const AnalysisStatus = {
 export const SERVER_ADDRESS =
   process.env.SERVICE_ADDR || "http://localhost:5000/";
 
-export const getQueryVariable = variable => {
+export const getQueryValue = variable => {
   const vars = window.location.search.substring(1).split("&");
   for (var i = 0; i < vars.length; i++) {
     var pair = vars[i].split("=");
@@ -16,4 +16,10 @@ export const getQueryVariable = variable => {
     }
   }
   return null;
+};
+
+export const fetchAnalysisStatus = id => {
+  return fetch(SERVER_ADDRESS + "status/" + id).then(response =>
+    response.json()
+  );
 };
