@@ -4,6 +4,7 @@
   "description": "Interface to view results from mozi snet service",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
     "start": "webpack-dev-server --config ./config/webpack.dev.js --progress --colors --open",
     "build": "webpack --config ./config/webpack.prod.js -p --progress --colors"
   },
@@ -26,13 +27,23 @@
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
-    "webpack-merge": "^4.1.4"
+    "webpack-merge": "^4.1.4",
+    "file-loader": "^1.1.11",
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.7.0",
+    "jest": "^23.6.0",
+    "react-test-renderer": "^16.6.3"
   },
   "dependencies": {
     "moment": "^2.22.2",
     "antd": "^3.10.4",
-    "file-loader": "^1.1.11",
     "react": "^16.6.1",
     "react-dom": "^16.6.1"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./src/setupTests.js",
+    "moduleNameMapper": {
+      "\\.(png|jpg|gif|ttf|eot|svg)$": "<rootDir>/config/jest/fileMock.js"
+    }
   }
 }
