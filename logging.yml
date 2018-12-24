@@ -32,7 +32,7 @@ handlers:
 loggers:
     mozi_snet:
         level: INFO
-        handlers: [info_file_handler, console]
+        handlers: [info_file_handler, console, error_file_handler]
         propagate: no
 
 root:
