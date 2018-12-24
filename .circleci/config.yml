@@ -2,6 +2,8 @@ version: 2
 jobs:
     build:
         machine: true
+        environment:
+            -   container: moses_snet_service
         working_directory: ~/mozi_snet_service
         steps:
             - checkout
@@ -12,13 +14,6 @@ jobs:
             - run:
                   name: Start the containers
                   command: docker-compose up -d
-
-    test:
-        machine: true
-        environment:
-            - container: moses_snet_service
-        working_directory: ~/mozi_snet_service
-        steps:
             - run:
                   name: Connect to the container
                   command: docker exec $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
@@ -29,6 +24,3 @@ workflows:
     build_and_test:
         jobs:
             - build
-            - test:
-                  requires:
-                      - build
