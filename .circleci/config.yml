@@ -8,10 +8,6 @@ jobs:
         steps:
             - checkout
             - run:
-                name: Build docker
-                command: docker-compose build
-
-            - run:
                   name: Start the containers
                   command: docker-compose up -d
             - run:
