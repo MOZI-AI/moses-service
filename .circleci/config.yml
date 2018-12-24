@@ -15,7 +15,7 @@ jobs:
                   name: Start the containers
                   command: docker-compose up -d
             - run:
-                  name: Connect to the container
+                  name: Run tests
                   command: docker exec $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
 
 

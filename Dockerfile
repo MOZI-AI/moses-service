@@ -1,4 +1,4 @@
-FROM opencog/moses:latest
+FROM xabush/opencog-deps:latest
 MAINTAINER Abdulrahman Semrie <xabush@singularitynet.io>
 
 #Run apt-get in NONINTERACTIVE mode
