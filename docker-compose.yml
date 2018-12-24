@@ -15,6 +15,7 @@ services:
           - MONGODB_URI=mongodb://mongo:27017/
           - DATASETS_DIR=/home/root/datasets
           - REDIS_URI=redis://redis:6379/0
+          - USER=root
 
       working_dir: /home/root/mozi_snet_service
 
