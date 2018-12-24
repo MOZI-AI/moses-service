@@ -1,10 +1,11 @@
 import React from "react";
 import { Row, Col, message, Alert } from "antd";
-import { AnalysisStatus, SERVER_ADDRESS, getQueryVariable } from "../utils";
 import { Result } from "./result";
 import { Loader } from "./loader";
+import { AnalysisStatus } from "../utils";
+import logo from "../assets/mozi_globe.png";
 
-export class AnalysisResults extends React.Component {
+export class AnalysisResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,23 +21,20 @@ export class AnalysisResults extends React.Component {
   }
 
   componentDidMount() {
-    const id = getQueryVariable("id");
-    if (!id) {
-      return;
-    }
-    this.setState({ analysisId: id, fetchingResult: true });
-    fetch(SERVER_ADDRESS + "status/" + id)
-      .then(response => response.json())
-      .then(response => {
+    const id = this.props.analysisId;
+    if (id) {
+      this.setState({ analysisId: id, fetchingResult: true });
+      this.props.fetchAnalysisStatus(id).then(response => {
         this.setState({
+          fetchingResult: false,
           analysisStatus: response.status,
           analysisProgress: response.progress,
           analysisStartTime: response.start_time,
           analysisEndTime: response.end_time,
-          analysisStatusMessage: response.message,
-          fetchingResult: false
+          analysisStatusMessage: response.message
         });
       });
+    }
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -59,7 +57,7 @@ export class AnalysisResults extends React.Component {
       status: this.state.analysisStatus,
       start: this.state.analysisStartTime,
       end: this.state.analysisEndTime,
-      message: this.state.message,
+      message: this.state.analysisStatusMessage,
       downloadResult: this.downloadResult
     };
 
@@ -67,6 +65,8 @@ export class AnalysisResults extends React.Component {
       <React.Fragment>
         <Row type="flex" justify="center" style={{ paddingTop: "90px" }}>
           <Col span={8} style={{ textAlign: "center" }}>
+            <img src={logo} style={{ width: "100px" }} />
+            <h2 style={{ marginBottom: "30px" }}>Mozi service results</h2>
             {this.state.analysisStatus ? (
               <Result {...progressProps} />
             ) : this.state.analysisId ? (
@@ -74,6 +74,7 @@ export class AnalysisResults extends React.Component {
                 <Loader />
               ) : (
                 <Alert
+                  id="invalidID"
                   type="error"
                   message={
                     'Session with ID "' +
@@ -84,6 +85,7 @@ export class AnalysisResults extends React.Component {
               )
             ) : (
               <Alert
+                id="missingID"
                 type="error"
                 message="It seems there is a problem with your request. Please make sure the URL is correct."
               />
