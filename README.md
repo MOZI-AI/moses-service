@@ -1,4 +1,4 @@
-  [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
+ [![CircleCI](https://circleci.com/gh/Habush/mozi_snet_service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
 
 The [MOSES](https://github.com/opencog/moses) service for SingularityNET
 

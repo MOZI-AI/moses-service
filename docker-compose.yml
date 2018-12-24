@@ -1,8 +1,8 @@
 version: "3"
 services:
   moses_service:
-      build: ./
-      container_name: moses_snet_service
+     image: xabush/moses_snet_service
+      container_name: moses_service
       links:
         - mongo
         - redis
@@ -22,7 +22,7 @@ services:
       command: bash -c "circusd --log-level debug circus.ini"
 
   frontend:
-      build: react/
+      image: xabush/snet_react_app
       container_name: react-app
 
       ports:
