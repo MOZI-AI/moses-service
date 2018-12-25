@@ -21,7 +21,7 @@ crossval_options = {"folds": 3, "testSize": 0.3, "randomSeed": 3}
 MONGODB_URI = os.environ["MONGODB_URI"]
 REDIS_URI = os.environ["REDIS_URI"]
 
-EXPIRY_SPAN = os.environ["EXPIRY_SPAN"] # the expiration period for a session in seconds
+EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"]) # the expiration period for a session in seconds
 SCAN_INTERVAL = 3600 * 24  # every 24hrs
 
 CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_URI}
