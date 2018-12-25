@@ -20,6 +20,7 @@ class Session:
         self.end_time = 0
         self.target_feature = target_feature
         self.mnemonic = mnemonic
+        self.expired = False
 
     def save(self, db):
         """
@@ -72,6 +73,7 @@ class Session:
             session.start_time = result["start_time"]
             session.end_time = result["end_time"]
             session.progress = result["progress"]
+            session.expired = result["expired"]
 
             return session
 
@@ -86,7 +88,7 @@ class Session:
         """
 
         sessions = db["sessions"].find({
-            "$and": [{"status": {"$ne": 0}}, {"status": {"$ne": 1}}]
+            "$and": [{"status": {"$ne": 0}}, {"status": {"$ne": 1}}, {"expired": {"$ne": True}}]
         })
 
         result = []
@@ -100,6 +102,7 @@ class Session:
                 session.start_time = s["start_time"]
                 session.end_time = s["end_time"]
                 session.progress = s["progress"]
+                session.expired = s["expired"]
 
                 result.append(session)
 

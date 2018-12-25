@@ -18,7 +18,7 @@ class TestScanSession(unittest.TestCase):
             "id": "abcd", "moses_options": "", "crossval_options": "",
             "dataset": "", "mnemonic": "abcdr4e", "target_feature": "case",
             "status": 2, "end_time": time.time(), "progress": 100, "message": "",
-            "start_time": 0
+            "start_time": 0, "expired": False
         }
 
     def test_get_expired_session(self):
@@ -45,13 +45,20 @@ class TestScanSession(unittest.TestCase):
 
         mock_task.assert_called()
 
+    @patch("pymongo.MongoClient")
     @patch("shutil.rmtree")
     @patch("os.remove")
-    def test_delete_expired_sessions(self, remove, rmtree):
+    def test_delete_expired_sessions(self, remove, rmtree, client):
+        mock_db = mongomock.MongoClient().db
+        client().__getitem__.return_value = mock_db
+
         mock_session = MagicMock()
         mock_session.mnemonic = self.session['mnemonic']
+        mock_session.update.return_value = None
+
         celery.conf.update(CELERY_ALWAYS_EAGER=True)
         delete_expired_sessions([mock_session])
+
         zip_file = os.path.join(DATASET_DIR, f"session_{self.session['mnemonic']}.zip")
         sess_dir = os.path.join(DATASET_DIR, f"session_{self.session['mnemonic']}")
 

@@ -64,3 +64,15 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(make_archive.called)
         self.assertTrue(send_file.called)
+
+    @patch("pymongo.MongoClient")
+    def test_result_api_expired(self, client):
+        temp_session = Session("abcd", "", "", "", "5abcd")
+        temp_session.expired = True
+        temp_session.status = 2
+        mock_db = mongomock.MongoClient().db
+        client().__getitem__.return_value = mock_db
+        temp_session.save(mock_db)
+
+        response = self.app.get("/result/5abcd")
+        self.assertEqual(response.status_code, 400)

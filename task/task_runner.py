@@ -130,6 +130,7 @@ def delete_expired_sessions(sessions):
     Deletes the results and datasets of sessions that have expired.
     :return:
     """
+    db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
     logger = logging.getLogger("mozi_snet")
     try:
         i = 0
@@ -139,6 +140,9 @@ def delete_expired_sessions(sessions):
 
             os.remove(zip_file)
             shutil.rmtree(sess_dir)
+
+            session.expired = True
+            session.update_session(db)
             i += 1
 
         logger.info(f"Successfully deleted {i} sessions")
