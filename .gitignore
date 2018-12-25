@@ -180,3 +180,7 @@ fabric.properties
 \.idea/
 
 \.DS_Store
+
+#grpc build result
+service_specs/moses_service_pb2.py
+service_specs/moses_service_pb2_grpc.py
