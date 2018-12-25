@@ -19,8 +19,14 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 3. Install the python dependencies for running the service client on your local system. Run:
 
     ``$ pip install grpcio==1.12.1 grpcio-tools==1.12.1 pyyaml``
+
+4. Generate the gRPC code from the protobufs. Run the following:
+
+    ``$ ./build.sh``
     
-4. On a new terminal, while still in the project directory, call the service client. 
+    Note: Make sure you have set **execute permission** for `build.sh`. If not, just run `chmod +x build.sh`
+
+5. On a new terminal, while still in the project directory, call the service client. 
     Replace **_<options file>_** with a _.yaml_ file containing the moses and cross-validation **_<dataset file>_** with the path to file you want to run analysis on
     
     ``$ python -m service.moses_service_client <options-file> <dataset-file>``

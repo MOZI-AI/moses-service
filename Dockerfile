@@ -32,3 +32,5 @@ RUN pip install -r requirements.txt
 
 COPY . $CODE
 
+RUN chmod 755 build.sh && ./build.sh
+
