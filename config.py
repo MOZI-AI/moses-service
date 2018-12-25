@@ -17,15 +17,12 @@ moses_options = "-j 8 --balance 1 -m 1000 -W 1 --output-cscore 1 --result-count 
 
 crossval_options = {"folds": 3, "testSize": 0.3, "randomSeed": 3}
 
-try:
-    MONGODB_URI = os.environ["MONGODB_URI"]
 
-except KeyError:
-    MONGODB_URI = "mongodb://127.0.0.1:27017/"
-try:
-    REDIS_URI = os.environ["REDIS_URI"]
-except KeyError:
-    REDIS_URI = "redis://localhost:6379/0"
+MONGODB_URI = os.environ["MONGODB_URI"]
+REDIS_URI = os.environ["REDIS_URI"]
+
+EXPIRY_SPAN = os.environ["EXPIRY_SPAN"] # the expiration period for a session in seconds
+SCAN_INTERVAL = 3600 * 24  # every 24hrs
 
 CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_URI}
 

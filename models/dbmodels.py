@@ -37,8 +37,6 @@ class Session:
         if os.path.exists(self.dataset):
             os.remove(self.dataset)
 
-        #  TODO Should we also delete the result data?
-
     def update_session(self, db):
         data = self.__dict__
         db["sessions"].update_one({
@@ -78,3 +76,33 @@ class Session:
             return session
 
         return result
+
+    @staticmethod
+    def get_finished_sessions(db):
+        """
+        Find sessions that have finished, both that ran into an error or successfully finished
+        :param db:
+        :return:
+        """
+
+        sessions = db["sessions"].find({
+            "$and": [{"status": {"$ne": 0}}, {"status": {"$ne": 1}}]
+        })
+
+        result = []
+
+        if sessions:
+            for s in sessions:
+                session = Session(s["id"], s["moses_options"], s["crossval_options"], s["dataset"],
+                                  s["mnemonic"], s["target_feature"])
+                session.status = s["status"]
+                session.message = s["message"]
+                session.start_time = s["start_time"]
+                session.end_time = s["end_time"]
+                session.progress = s["progress"]
+
+                result.append(session)
+
+        return result
+
+
