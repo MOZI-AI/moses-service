@@ -9,6 +9,7 @@ from flask import Flask, send_file, jsonify
 from flask_cors import CORS
 import pymongo
 from config import MONGODB_URI, DB_NAME, DATASET_DIR, EXPIRY_SPAN
+from datetime import timedelta
 
 app = Flask(__name__)
 CORS(app)
@@ -28,12 +29,13 @@ def check_status(mnemonic):
     session = Session.get_session(db, mnemonic=mnemonic)
 
     if session:
-        if session.status == 2 or session.status == -1:
+        if session.status == 1:
             return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time, "end_time": session.end_time, "message": session.message}), 200
 
-        time_to_expire = EXPIRY_SPAN - (time.time() - session.end_time)
-
-        return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time, "message": session.message, "expire_time": time_to_expire}), 200
+        elif session.status == 2 or session.status == -1:
+            td = timedelta(days=EXPIRY_SPAN)
+            time_to_expire = td.total_seconds() - (time.time() - session.end_time)
+            return jsonify({"status": session.status, "progress": session.progress, "start_time": session.start_time, "message": session.message, "end_time": session.end_time, "expire_time": time_to_expire}), 200
 
     else:
         return jsonify({"response": "Session not found"}), 404

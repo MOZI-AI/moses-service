@@ -116,9 +116,9 @@ def scan_expired_sessions(time_span):
     """
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
     logger = logging.getLogger("mozi_snet")
-
+    td = timedelta(days=time_span)
     logger.info("Scanning expired sessions")
-    result = get_expired_sessions(db, time_span)
+    result = get_expired_sessions(db, td.total_seconds())
 
     if result:
         delete_expired_sessions.apply_async(result)

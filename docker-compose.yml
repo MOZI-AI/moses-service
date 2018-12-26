@@ -16,7 +16,7 @@ services:
           - DATASETS_DIR=/home/root/datasets
           - REDIS_URI=redis://redis:6379/0
           - USER=root
-          - EXPIRY_SPAN=88776
+          - EXPIRY_SPAN=14
 
       working_dir: /home/root/mozi_snet_service
 

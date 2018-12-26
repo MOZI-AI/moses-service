@@ -6,8 +6,6 @@ import logging.config
 import yaml
 
 
-DATASET_DIR = os.environ["DATASETS_DIR"]
-
 TEST_DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "tests/data"))
 
 moses_options = "-j 8 --balance 1 -m 1000 -W 1 --output-cscore 1 --result-count 100 " \
@@ -17,11 +15,18 @@ moses_options = "-j 8 --balance 1 -m 1000 -W 1 --output-cscore 1 --result-count 
 
 crossval_options = {"folds": 3, "testSize": 0.3, "randomSeed": 3}
 
+try:
+    MONGODB_URI = os.environ["MONGODB_URI"]
+    REDIS_URI = os.environ["REDIS_URI"]
+    DATASET_DIR = os.environ["DATASETS_DIR"]
+    EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"])  # the expiration period for a session in days
 
-MONGODB_URI = os.environ["MONGODB_URI"]
-REDIS_URI = os.environ["REDIS_URI"]
+except KeyError:
+    MONGODB_URI = "http://localhost:27017"
+    REDIS_URI = "http://localhost:6913"
+    DATASET_DIR = "/home/root"
+    EXPIRY_SPAN = 14
 
-EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"]) # the expiration period for a session in seconds
 SCAN_INTERVAL = 3600 * 24  # every 24hrs
 
 CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_URI}
