@@ -18,7 +18,7 @@ jobs:
 
             - run:
                   name: Upload coverage report
-                  command: docker exec -it $container sh - c"curl -s https://codecov.io/bash | bash"
+                  command: docker exec -it $container sh - c "curl -s https://codecov.io/bash | bash"
 
 workflows:
     version: 2
