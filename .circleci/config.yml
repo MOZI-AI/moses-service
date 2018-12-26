@@ -14,11 +14,11 @@ jobs:
                   command: docker-compose up -d
             - run:
                   name: Run tests
-                  command: docker exec -it $container -sh "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
+                  command: docker exec -it $container sh "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
 
             - run:
                   name: Upload coverage report
-                  command: docker exec -it $container -sh "curl -s https://codecov.io/bash | bash"
+                  command: docker exec -it $container sh "curl -s https://codecov.io/bash | bash"
 
 workflows:
     version: 2
