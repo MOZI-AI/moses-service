@@ -17,6 +17,7 @@ services:
           - REDIS_URI=redis://redis:6379/0
           - USER=root
           - EXPIRY_SPAN=14
+          - CODECOV_TOKEN=13a8c69b-b9c8-4c0c-8682-92b9aeda97a3
 
       working_dir: /home/root/mozi_snet_service
 

@@ -1,9 +1,11 @@
 version: 2
+
 jobs:
     build:
         machine: true
         environment:
-            -   container: moses_service
+            - container: moses_service
+            - CODECOV_TOKEN: 13a8c69b-b9c8-4c0c-8682-92b9aeda97a3
         working_directory: ~/mozi_snet_service
         steps:
             - checkout
@@ -12,8 +14,11 @@ jobs:
                   command: docker-compose up -d
             - run:
                   name: Run tests
-                  command: docker exec $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
+                  command: docker exec -it $container -sh "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
 
+            - run:
+                  name: Upload coverage report
+                  command: docker exec -it $container -sh "curl -s https://codecov.io/bash | bash"
 
 workflows:
     version: 2
