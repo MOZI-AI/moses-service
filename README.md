@@ -18,7 +18,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 
 3. Install the python dependencies for running the service client on your local system. Run:
 
-    ``$ pip install grpcio==1.12.1 grpcio-tools==1.12.1 pyyaml``
+    ``$ pip install grpcio grpcio-tools pyyaml``
 
 4. Generate the gRPC code from the protobufs. Run the following:
 
