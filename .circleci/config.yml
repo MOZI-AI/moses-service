@@ -10,7 +10,7 @@ jobs:
             - checkout
             - run:
                  name: Build images
-                 command: docker-compose -f docker-compose-dev.yml
+                 command: docker-compose -f docker-compose-dev.yml build
             - run:
                   name: Start the containers
                   command: docker-compose up -d
