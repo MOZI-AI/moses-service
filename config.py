@@ -20,20 +20,26 @@ try:
     REDIS_URI = os.environ["REDIS_URI"]
     DATASET_DIR = os.environ["DATASETS_DIR"]
     EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"])  # the expiration period for a session in days
+    SCAN_INTERVAL = float(os.environ["SCAN_INTERVAL"])
+    APP_PORT = os.environ["APP_PORT"]
 
 except KeyError:
     MONGODB_URI = "http://localhost:27017"
     REDIS_URI = "http://localhost:6913"
     DATASET_DIR = "/home/root"
     EXPIRY_SPAN = 14
-
-SCAN_INTERVAL = 3600 * 24  # every 24hrs
+    SCAN_INTERVAL = 3600 * 24  # every 24hrs
+    APP_PORT = 80
 
 CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_URI}
 
 DB_NAME = "mozi_snet"
 
-MOZI_URI = "http://localhost"
+if APP_PORT == 80:
+    MOZI_URI = "http://localhost"
+
+else:
+    MOZI_URI = f"http://localhost:{APP_PORT}"
 
 GRPC_PORT = "5003"
 

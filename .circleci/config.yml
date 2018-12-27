@@ -9,6 +9,9 @@ jobs:
         steps:
             - checkout
             - run:
+                  - name: Build images
+                    - command: docker-compose -f docker-compose-dev.yml
+            - run:
                   name: Start the containers
                   command: docker-compose up -d
             - run:

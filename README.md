@@ -1,4 +1,4 @@
- [![CircleCI](https://circleci.com/gh/Habush/mozi_snet_service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
+ [![CircleCI](https://circleci.com/gh/Habush/mozi_snet_service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)    [![Coverage Status](https://coveralls.io/repos/github/Habush/mozi_snet_service/badge.svg)](https://coveralls.io/github/Habush/mozi_snet_service)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
 
 The [MOSES](https://github.com/opencog/moses) service for SingularityNET
 
@@ -15,6 +15,8 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 2. Go to the project folder and start docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
     ``$ docker-compose up``
+    
+    Note: By default, the react web app will run on port `80`. If you want it to run on a different port, change the value of `APP_PORT` variable in `.env` file
 
 3. Install the python dependencies for running the service client on your local system. Run:
 
