@@ -15,11 +15,6 @@ jobs:
             - run:
                   name: Run tests
                   command: docker exec -it $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report"
-
-            - run:
-                  name: Upload coverage report
-                  command: docker exec -it $container sh -c "curl -s https://codecov.io/bash | bash"
-
 workflows:
     version: 2
     build_and_test:

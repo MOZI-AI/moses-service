@@ -10,7 +10,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 
 1. Clone the project:
 
-    ``$ git clone https://github.com/Habush/mozi_snet_service.git``
+    ``$ git clone --recursively https://github.com/Habush/mozi_snet_service.git``
     
 2. Go to the project folder and start docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 

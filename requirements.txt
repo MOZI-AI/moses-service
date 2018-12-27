@@ -1,6 +1,7 @@
 celery
 circus
 coverage
+coveralls
 flask
 flask-cors
 grpcio
