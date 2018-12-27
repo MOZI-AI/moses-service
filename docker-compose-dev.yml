@@ -25,7 +25,7 @@ services:
       command: bash -c "circusd --log-level debug circus.ini"
 
   frontend:
-      build: react/
+      build: ./react
       container_name: react-app
 
       ports:

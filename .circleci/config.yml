@@ -5,15 +5,13 @@ jobs:
         machine: true
         environment:
             - container: moses_service
+
         working_directory: ~/mozi_snet_service
         steps:
             - checkout
             - run:
-                 name: Build images
-                 command: docker-compose -f docker-compose-dev.yml build
-            - run:
                   name: Start the containers
-                  command: docker-compose up -d
+                  command: docker-compose -f docker-compose-dev.yml up -d
             - run:
                   name: Run tests with coverage
                   command: docker exec -it -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report && coveralls"
