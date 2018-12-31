@@ -6,6 +6,7 @@ import subprocess
 import logging
 import os
 from mlxtend.evaluate import scoring, mcnemar, mcnemar_table
+import tempfile
 
 
 class ModelEvaluator:
@@ -35,7 +36,7 @@ class ModelEvaluator:
         num_models, num_samples = models_df.shape[0], input_df.shape[0]
         matrix = np.empty((num_models, num_samples), dtype=int)
 
-        temp_eval_file = "eval_tmp"
+        temp_eval_file = tempfile.NamedTemporaryFile().name
 
         for i, model in enumerate(models):
             cmd = ["eval-table", "-i", input_file, "-c", model, "-o", temp_eval_file, "-u", self.target_feature]
@@ -50,8 +51,7 @@ class ModelEvaluator:
                 self.logger.error("The following error raised by eval-table %s" % stderr.decode("utf-8"))
                 raise ChildProcessError(stderr.decode("utf-8"))
 
-        # clean up temp file and log file
-        os.remove(temp_eval_file)
+        # clean up log file
         os.remove("eval-table.log")
 
         return matrix
@@ -116,9 +116,9 @@ class ModelEvaluator:
         # if the sum of b + c is less than 25, we should you use the binomial distribution
         # instead of the chi-squared distribution
         if n < 25:
-            chi, p_value = mcnemar(ary=mc_table, exact=True)
+            _, p_value = mcnemar(ary=mc_table, exact=True)
 
         else:
-            chi, p_value = mcnemar(ary=mc_table, exact=False)
+            _, p_value = mcnemar(ary=mc_table, exact=False)
 
         return p_value

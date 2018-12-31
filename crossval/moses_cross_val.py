@@ -11,6 +11,7 @@ from crossval.model_evaluator import ModelEvaluator
 import math
 from utils.feature_count import combo_parser, ComboTreeTransform
 from scipy import stats
+import tempfile
 
 
 class CrossValidation:
@@ -28,7 +29,6 @@ class CrossValidation:
         self.cwd = cwd
         self.db = db
         self.logger = logging.getLogger("mozi_snet")
-        self.train_file, self.test_file = None, None
         self.fold_files = []
         self._set_dir()
 
@@ -54,17 +54,15 @@ class CrossValidation:
         x, cols, cv = self.split_dataset()
         i = 0
         for train_index, test_index in cv:
+            train_file, test_file = tempfile.NamedTemporaryFile().name, tempfile.NamedTemporaryFile().name
+
             seeds = self._generate_seeds(self.session.crossval_options["randomSeed"])
-
             x_train, x_test = x[train_index], x[test_index]
-
-            pd.DataFrame(x_train, columns=cols).to_csv(self.train_file, index=False)
-
-            pd.DataFrame(x_test, columns=cols).to_csv(self.test_file, index=False)
-
+            pd.DataFrame(x_train, columns=cols).to_csv(train_file, index=False)
+            pd.DataFrame(x_test, columns=cols).to_csv(test_file, index=False)
             files = []
 
-            for file in self.run_seeds(seeds, i):
+            for file in self.run_seeds(seeds, i, train_file):
                 files.append(file)
 
             fold_fname = f"fold_{i}.csv"
@@ -72,7 +70,7 @@ class CrossValidation:
 
             CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
-            self.score_fold(fold_fname)
+            self.score_fold(fold_fname, train_file, test_file)
             self.count_features(fold_fname)
 
             i += 1
@@ -102,22 +100,21 @@ class CrossValidation:
         splits, test_size = self.session.crossval_options["folds"], self.session.crossval_options["testSize"]
         cv = StratifiedShuffleSplit(n_splits=splits, test_size=test_size)
 
-        self.train_file, self.test_file = "train_file", "test_file"
-
         return x, df.columns.values, cv.split(x, y)
 
-    def run_seeds(self, seeds, i):
+    def run_seeds(self, seeds, i, file):
         """
         Helper method to run MOSES on a train set using random seeds
         :param seeds: The rand seed numbers
         :param i: The current fold index
+        :param file: The training file
         :return: file: the output file containing the MOSES models
         """
         for seed in seeds:
             output_file = f"fold_{i}_seed_{seed}.csv"
             moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
-            moses_runner = MosesRunner(self.train_file, output_file, moses_options)
+            moses_runner = MosesRunner(file, output_file, moses_options)
             returncode, stdout, stderr = moses_runner.run_moses()
 
             if returncode != 0:
@@ -141,26 +138,28 @@ class CrossValidation:
 
         self.session.update_session(self.db)
 
-    def score_fold(self, fold_fname):
+    def score_fold(self, fold_file, train_file, test_file):
         """
         Score the models from a fold on both test and training partitions
-        :param fold_fname: the model file containing the models for this fold
+        :param fold_file: the model file containing the models for this fold
+        :param train_file: The file containing the train set
+        :param test_file: The file containing the test set
         :return:
         """
         model_evaluator = ModelEvaluator(self.session.target_feature)
 
-        fold_df = pd.read_csv(fold_fname)
-        test_matrix = model_evaluator.run_eval(fold_df, self.test_file)
-        train_matrix = model_evaluator.run_eval(fold_df, self.train_file)
+        fold_df = pd.read_csv(fold_file)
+        test_matrix = model_evaluator.run_eval(fold_df, test_file)
+        train_matrix = model_evaluator.run_eval(fold_df, train_file)
 
-        test_scores = model_evaluator.score_models(test_matrix, self.test_file)
-        train_scores = model_evaluator.score_models(train_matrix, self.train_file)
+        test_scores = model_evaluator.score_models(test_matrix, test_file)
+        train_scores = model_evaluator.score_models(train_matrix, train_file)
 
         score_matrix = np.concatenate((test_scores, train_scores), axis=1)
 
-        df = self.filter_scores(fold_fname, score_matrix)
+        df = self.filter_scores(fold_file, score_matrix)
 
-        df.to_csv(fold_fname, index=False)
+        df.to_csv(fold_file, index=False)
 
     def filter_scores(self, fold_file, scores):
         """
@@ -256,4 +255,5 @@ class CrossValidation:
 
         df1.to_csv(fold_file, index=False)
 
-        for file in files: os.remove(file)
+        for file in files:
+            os.remove(file)

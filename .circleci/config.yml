@@ -10,7 +10,7 @@ jobs:
         steps:
             - checkout
             - run:
-                  name: "Pull Submodules"
+                  name: Pull Submodules
                   command: |
                     git submodule init
                     git submodule update --remote
@@ -20,6 +20,8 @@ jobs:
             - run:
                   name: Run tests with coverage
                   command: docker exec -it -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report && coveralls"
+
+
 workflows:
     version: 2
     build_and_test:
