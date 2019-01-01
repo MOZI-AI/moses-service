@@ -1,1 +1,0 @@
-__author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'

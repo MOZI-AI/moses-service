@@ -133,7 +133,6 @@ def delete_expired_sessions(sessions):
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
     logger = logging.getLogger("mozi_snet")
     try:
-        i = 0
         for session in sessions:
             zip_file = os.path.join(DATASET_DIR, f"session_{session.mnemonic}.zip")
             sess_dir = os.path.join(DATASET_DIR, f"session_{session.mnemonic}")
@@ -143,9 +142,8 @@ def delete_expired_sessions(sessions):
 
             session.expired = True
             session.update_session(db)
-            i += 1
 
-        logger.info(f"Successfully deleted {i} sessions")
+        logger.info(f"Successfully deleted {len(sessions)} sessions")
 
     except Exception as ex:
         logger.error(f"Ran into error f{ex.__str__()}")

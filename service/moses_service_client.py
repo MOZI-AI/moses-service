@@ -6,7 +6,13 @@ from service_specs.moses_service_pb2_grpc import MosesServiceStub
 import base64
 import sys
 import yaml
-from config import GRPC_PORT
+from config import GRPC_PORT, setup_logging
+import logging
+
+setup_logging()
+
+logger = logging.getLogger("client_log")
+
 
 
 def read_file(location):
@@ -36,6 +42,6 @@ if __name__ == "__main__":
         channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
         stub = MosesServiceStub(channel)
         result = run_analysis(stub, sys.argv[1], sys.argv[2])
-        print(result)
+        logger.info(result)
     else:
-        print(f"Usage: python {__file__} options.yaml <input_file>")
+        logger.info(f"Usage: python {__file__} options.yaml <input_file>")

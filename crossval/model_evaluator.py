@@ -115,10 +115,7 @@ class ModelEvaluator:
         n = mc_table[0, 1] + mc_table[1, 0]
         # if the sum of b + c is less than 25, we should you use the binomial distribution
         # instead of the chi-squared distribution
-        if n < 25:
-            _, p_value = mcnemar(ary=mc_table, exact=True)
-
-        else:
-            _, p_value = mcnemar(ary=mc_table, exact=False)
+        binomial = True if n < 25 else False
+        _, p_value = mcnemar(ary=mc_table, exact=binomial)
 
         return p_value

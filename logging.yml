@@ -3,12 +3,20 @@ disable_existing_loggers: False
 formatters:
     simple:
         format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    print:
+        format: "%(levelname)s - %(message)s"
 
 handlers:
-    console:
+    console_1:
         class: logging.StreamHandler
         level: DEBUG
         formatter: simple
+        stream: ext://sys.stdout
+
+    console_2:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: print
         stream: ext://sys.stdout
 
     info_file_handler:
@@ -32,9 +40,15 @@ handlers:
 loggers:
     mozi_snet:
         level: INFO
-        handlers: [info_file_handler, console, error_file_handler]
+        handlers: [info_file_handler, console_1, error_file_handler]
         propagate: no
+
+    client_log:
+        level: INFO
+        handlers: [console_2]
+        propagate: no
+
 
 root:
     level: INFO
-    handlers: [console, info_file_handler, error_file_handler]
+    handlers: [console_1, info_file_handler, error_file_handler]

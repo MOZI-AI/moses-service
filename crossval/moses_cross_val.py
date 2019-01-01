@@ -37,7 +37,7 @@ class CrossValidation:
 
         self.tree_transformer = ComboTreeTransform()
 
-        logging.info(f"Current working dir: {os.getcwd()}")
+        self.logger.info(f"Current working dir: {os.getcwd()}")
 
     def _set_dir(self):
         if not os.path.exists(self.cwd):
@@ -52,8 +52,7 @@ class CrossValidation:
         :return:
         """
         x, cols, cv = self.split_dataset()
-        i = 0
-        for train_index, test_index in cv:
+        for i, (train_index, test_index) in enumerate(cv):
             train_file, test_file = tempfile.NamedTemporaryFile().name, tempfile.NamedTemporaryFile().name
 
             seeds = self._generate_seeds(self.session.crossval_options["randomSeed"])
@@ -72,8 +71,6 @@ class CrossValidation:
             self.logger.info("Evaluating fold: %d" % i)
             self.score_fold(fold_fname, train_file, test_file)
             self.count_features(fold_fname)
-
-            i += 1
 
             self.on_progress_update()
 
