@@ -13,7 +13,7 @@ grammar = '''
     and_or: "and" | "or"
     negate: "!" feature
     feature: "$" name
-    name: /\w+/
+    name: /[^$!()]+/
     
     %import common.ESCAPED_STRING
     %import common.WS
@@ -38,7 +38,7 @@ class ComboTreeTransform(Transformer):
         self.fcount[self.curr]["control"] = self.fcount[self.curr]["control"] + 1
 
     def name(self, s):
-        feature = s[0].value
+        feature = s[0].value.strip()
         self.curr = feature
         if not feature in self.fcount:
             self.fcount[feature] = {"case": 0, "control": 0}
