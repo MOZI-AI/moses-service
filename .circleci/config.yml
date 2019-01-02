@@ -16,7 +16,7 @@ jobs:
                     git submodule update --remote
             - run:
                   name: Start the containers
-                  command: docker-compose -f docker-compose-dev.yml up -d
+                  command: docker-compose up -d
             - run:
                   name: Run tests with coverage
                   command: docker exec -it -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report && coveralls"

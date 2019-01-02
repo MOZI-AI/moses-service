@@ -33,7 +33,7 @@ class TestTaskRunner(unittest.TestCase):
         client().__getitem__.return_value = mock_db
         session = {
             "id": self.session_id, "moses_options": moses_options, "crossval_options": crossval_options,
-            "dataset": self.dataset, "mnemonic": "abcdr4e", "target_feature": "case"
+            "dataset": self.dataset, "mnemonic": "abcdr4e", "target_feature": "case", "swd": None
         }
 
         mock_db.sessions.insert_one(session)

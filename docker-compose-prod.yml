@@ -1,7 +1,7 @@
 version: "3"
 services:
   moses_service:
-      build: ./
+      image: xabush/moses_snet_service
       container_name: moses_service
       links:
         - mongo
@@ -26,13 +26,11 @@ services:
       command: bash -c "circusd --log-level debug circus.ini"
 
   frontend:
-      build:
-          context: react/
-          args:
-            - "SERVICE_ADDR=SERVICE_ADDR"
-
+      image: xabush/snet_react_app
       container_name: react-app
 
+      environment:
+          - SERVICE_ADDR=${SERVICE_ADDR}
       ports:
           - ${APP_PORT}:80
   mongo:

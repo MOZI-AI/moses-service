@@ -39,9 +39,12 @@ def run_analysis(stub, opts_file, file_path):
 if __name__ == "__main__":
 
     if len(sys.argv) == 3:
-        channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
-        stub = MosesServiceStub(channel)
-        result = run_analysis(stub, sys.argv[1], sys.argv[2])
-        logger.info(result)
+        try:
+            channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
+            stub = MosesServiceStub(channel)
+            result = run_analysis(stub, sys.argv[1], sys.argv[2])
+            logger.info(result)
+        except grpc.RpcError as e:
+            logger.error(e.details())
     else:
         logger.info(f"Usage: python {__file__} options.yaml <input_file>")

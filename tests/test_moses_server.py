@@ -31,12 +31,21 @@ class TestMosesServer(unittest.TestCase):
         pass
 
     @patch("service.moses_service_server.start_analysis")
-    def test_run_analysis(self, some_func):
-        some_func().delay = MagicMock(name="delay")
+    def test_run_analysis_happy_path(self, delay_func):
+        delay_func().delay = MagicMock(name="delay")
         opts_file = os.path.join(TEST_DATA_DIR, "options.yaml")
         input_file = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
         result = run_analysis(self.stub, opts_file, input_file)
 
         self.assertIsNotNone(result.resultUrl)
-        self.assertTrue(some_func.delay.called)
+        self.assertTrue(delay_func.delay.called)
         print(result.resultUrl)
+
+    @patch("service.moses_service_server.start_analysis")
+    def test_run_analysis_error_path(self, delay_func):
+        delay_func().delay = MagicMock(name="delay")
+        opts_file = os.path.join(TEST_DATA_DIR, "options.yaml")
+        input_file = os.path.join(TEST_DATA_DIR, "malformed.csv")
+
+        with self.assertRaises(grpc.RpcError):
+            run_analysis(self.stub, opts_file, input_file)
