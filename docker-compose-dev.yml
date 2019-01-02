@@ -19,18 +19,19 @@ services:
           - EXPIRY_SPAN=${EXPIRY_SPAN}
           - SCAN_INTERVAL=${SCAN_INTERVAL}
           - APP_PORT=${APP_PORT}
-          - SERVER_ADDR=${SERVER_ADDR}
+          - SERVICE_ADDR=${SERVICE_ADDR}
 
       working_dir: /home/root/mozi_snet_service
 
       command: bash -c "circusd --log-level debug circus.ini"
 
   frontend:
-      build: react/
-      container_name: react-app
+      build:
+          context: react/
+          args:
+            - "SERVICE_ADDR=SERVICE_ADDR"
 
-      environment:
-          - SERVICE_ADDR=${SERVER_ADDR}
+      container_name: react-app
 
       ports:
           - ${APP_PORT}:80

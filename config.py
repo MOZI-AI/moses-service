@@ -22,7 +22,7 @@ try:
     EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"])  # the expiration period for a session in days
     SCAN_INTERVAL = float(os.environ["SCAN_INTERVAL"])
     APP_PORT = os.environ["APP_PORT"]
-    SERVER_ADDR = os.environ['SERVER_ADDR']
+    SERVER_ADDR = os.environ['SERVICE_ADDR']
 
 except KeyError:
     MONGODB_URI = "http://localhost:27017"
