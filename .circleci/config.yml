@@ -40,8 +40,6 @@ jobs:
                         docker-compose stop; # stop the containers if they are runnning
                         git pull;
 
-                        echo "APP_PORT=8080\nSERVICE_ADDR=46.4.115.181" > .env
-
                         docker-compose build;
 
                         docker-compose up -d;
