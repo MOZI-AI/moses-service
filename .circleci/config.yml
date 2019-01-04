@@ -40,7 +40,7 @@ jobs:
                         docker-compose stop; # stop the containers if they are runnning
                         git pull;
 
-                        sed -i '/SERVICE_ADDR/s/.*/SERVICE_ADDR=46.4.115.181/' .env; #change the service address
+                        echo "APP_PORT=8080\nSERVICE_ADDR=46.4.115.181" > .env
 
                         docker-compose build;
 

@@ -16,8 +16,8 @@ services:
           - DATASETS_DIR=/home/root/datasets
           - REDIS_URI=redis://redis:6379/0
           - USER=root
-          - EXPIRY_SPAN=${EXPIRY_SPAN}
-          - SCAN_INTERVAL=${SCAN_INTERVAL}
+          - EXPIRY_SPAN=14
+          - SCAN_INTERVAL=86400
           - APP_PORT=${APP_PORT}
           - SERVICE_ADDR=${SERVICE_ADDR}
 
