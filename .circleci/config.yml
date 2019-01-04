@@ -38,7 +38,10 @@ jobs:
                         fi
 
                         cd mozi_snet_service;
-                        echo $APP_PORT
+
+                        echo "APP_PORT=${APP_PORT}" > .env
+                        echo "SERVICE_ADDR=${SERVICE_ADDR}" >> .env
+
                         docker-compose stop; # stop the containers if they are runnning
 
                         docker-compose build;
