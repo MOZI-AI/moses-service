@@ -21,9 +21,38 @@ jobs:
                   name: Run tests with coverage
                   command: docker exec -it -e COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN $container sh -c "coverage run --rcfile=./.coveragerc -m unittest && coverage report && coveralls"
 
+    deploy:
+        machine: true
+        steps:
+            - run:
+                  name: Deploy over SSH
+                  command: |
+                      ssh $SSH_USER@$SERVER bash << EOF
+                        cd ~/snet
+
+                        if [ ! -d "mozi_snet_service"]; then
+                            # clone the repo if it doesn't exist
+                            git clone --recursive https://github.com/Habush/mozi_snet_service.git
+                        fi
+
+                        cd mozi_snet_service;
+
+                        docker-compose stop; # stop the containers if they are runnning
+                        git pull;
+
+                        sed -i '' '/SERVICE_ADDR/s/.*/SERVICE_ADDR=46.4.115.181/' .env #change the service address
+
+                        docker-compose build;
+
+                        docker-compose up -d;
+
+                      EOF
 
 workflows:
     version: 2
-    build_and_test:
+    build_and_deploy:
         jobs:
             - build
+            - deploy:
+                  requires:
+                      - build
