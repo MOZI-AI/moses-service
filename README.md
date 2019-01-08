@@ -43,10 +43,12 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 
 5. On a new terminal, while still in the project directory, call the service client. 
     Replace **_<options file>_** with a _.yaml_ file containing the moses and cross-validation **_<dataset file>_** with the path to file you want to run analysis on
+    Inputs:
+  - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
+  - `data`: csv file with observations in rows and binary features in columns. see [above](#data) for a discussion of prepairing specific experimental data types.
     
     ``$ python -m service.moses_service_client <options-file> <dataset-file>``
     
     This will output a link where you can poll the status and download the result files once the analysis is finished.
    
    NOTE: You can find a sample `options.yaml` file in the ``tests/data`` directory of the project
-    

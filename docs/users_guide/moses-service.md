@@ -41,33 +41,8 @@ $ cd mozi_snet_service
 
 ### Calling the service:
 
-##### 1. Local (testing purpose)
 
-Inputs:
-  - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
-  - `data`: csv file with observations in rows and binary features in columns. see [above](#data) for a discussion of prepairing specific experimental data types.
-
-Start docker containers
-```
-$ docker-compose up -d #Start the docker container
-```
-
-Install python dependencies
-```
-$ pip install grpcio grpcio-tools pyyaml
-```
-Generate the gRPC code from the protobufs.
-```
-$ ./build.sh
-```
-Call the service locally
-```
-$ python3 -m service.moses_service_client [options.yaml] [binary.csv]
-```
-
-##### 2. Through SingularityNET
-
-2a. Install the `mozi-cli` python tool for generating the query.json file used to call the file
+a. Install the `mozi-cli` python tool for generating the query.json file used to call the file
 
 ```
 $ mozi-cli [dataset-file] [path-to-save-output]
@@ -75,7 +50,7 @@ $ mozi-cli [dataset-file] [path-to-save-output]
 Look at the documentation for mozi-cli [here](https://github.com/Habush/mozi-service-cli)
 
 
-2b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
+b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
 
 ```
 $ snet client call 0 0.00000001 46.4.115.181:5002 StartAnalysis query.json

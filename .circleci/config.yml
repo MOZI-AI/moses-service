@@ -37,6 +37,8 @@ jobs:
                             git pull
                         fi
 
+                        export APP=8080
+                        export SERVICE_ADDR=46.4.115.181
                         cd mozi_snet_service;
 
                         docker-compose stop; # stop the containers if they are runnning
