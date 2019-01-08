@@ -1,7 +1,7 @@
 [issue-template]: ../../../../../issues/new?template=BUG_REPORT.md
 [feature-template]: ../../../../../issues/new?template=FEATURE_REQUEST.md
 
-![singnetlogo](../../docs/assets/singnet-logo.jpg?raw=true 'SingularityNET')
+![singnetlogo](../assets/singnet-logo.jpg?raw=true 'SingularityNET')
 
 # Mozi Moses Service
 
@@ -35,7 +35,7 @@ For numerically valued features such as transcript of protein levels, the median
 Clone this repository:
 
 ```
-$ git clone https://github.com/singnet/mozi_snet_service.git
+$ git clone https://github.com/Habush/moses-service.git
 $ cd mozi_snet_service
 ```
 
@@ -44,7 +44,7 @@ $ cd mozi_snet_service
 ##### 1. Local (testing purpose)
 
 Inputs:
-  - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#sample-options) for examples.
+  - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
   - `data`: csv file with observations in rows and binary features in columns. see [above](#data) for a discussion of prepairing specific experimental data types.
 
 Start docker containers
@@ -87,7 +87,7 @@ description: "Analysis started"
 
 *Note:* you can use this service through the [SingularityNET DApp](beta.singularitynet.io)
 
-#### Sample Options
+#### Options
 ```
 moses_opts: "-j8 --balance 1 \
   -m 10000 -W1 \
