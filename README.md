@@ -1,3 +1,9 @@
+ [issue-template]: ../../issues/new?template=BUG_REPORT.md
+[feature-template]: ../../issues/new?template=FEATURE_REQUEST.md
+
+![singnetlogo](docs/assets/singnet-logo.jpg 'SingularityNET')
+
+
  [![CircleCI](https://circleci.com/gh/Habush/mozi_snet_service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)    [![Coverage Status](https://coveralls.io/repos/github/Habush/mozi_snet_service/badge.svg?branch=master)](https://coveralls.io/github/Habush/mozi_snet_service?branch=master)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
 
 The [MOSES](https://github.com/opencog/moses) service for SingularityNET
