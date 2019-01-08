@@ -51,9 +51,6 @@ class ModelEvaluator:
                 self.logger.error("The following error raised by eval-table %s" % stderr.decode("utf-8"))
                 raise ChildProcessError(stderr.decode("utf-8"))
 
-        # clean up log file
-        os.remove("eval-table.log")
-
         return matrix
 
     def score_models(self, matrix, input_file):

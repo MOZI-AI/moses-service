@@ -34,14 +34,14 @@ jobs:
                             # clone the repo if it doesn't exist
                             git clone --recursive https://github.com/Habush/mozi_snet_service.git
                         else
-                            git pull;
+                            git pull
                         fi
 
                         cd mozi_snet_service;
 
                         docker-compose stop; # stop the containers if they are runnning
 
-                        docker-compose build --no-cache;
+                        docker-compose build;
 
                         docker-compose up -d;
 
