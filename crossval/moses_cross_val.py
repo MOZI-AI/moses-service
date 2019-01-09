@@ -108,7 +108,7 @@ class CrossValidation:
         :return: file: the output file containing the MOSES models
         """
         for seed in seeds:
-            output_file = f"fold_{i}_seed_{seed}.csv"
+            output_file = tempfile.NamedTemporaryFile().name
             moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
             moses_runner = MosesRunner(file, output_file, moses_options)
@@ -251,6 +251,3 @@ class CrossValidation:
             df1.append(dfs)
 
         df1.to_csv(fold_file, index=False)
-
-        for file in files:
-            os.remove(file)
