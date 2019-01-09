@@ -16,3 +16,7 @@ pre code {
     border: 0;
     padding: 0;
 }
+
+.snet-link {
+    color: inherit;
+}

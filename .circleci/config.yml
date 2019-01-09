@@ -32,7 +32,7 @@ jobs:
 
                         if [ ! -d "mozi_snet_service" ]; then
                             # clone the repo if it doesn't exist
-                            git clone --recursive https://github.com/Habush/mozi_snet_service.git
+                            git clone --recursive https://github.com/Habush/moses-service.git
                         else
                             git pull
                         fi
