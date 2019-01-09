@@ -3,8 +3,8 @@ __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 import subprocess
 import logging
 import re
-import in_place
-
+import tempfile
+import fileinput
 
 class MosesRunner:
     """
@@ -48,11 +48,11 @@ class MosesRunner:
     def format_combo(self, combo_file):
         """
         Format the raw combo output returned by moses into a file that has only the model and the combo complexity score
-        :param combo_file: The path to the raw combo outout
+        :param combo_file: The path to the raw combo output
         :return:
         """
 
-        with in_place.InPlace(combo_file) as fp:
+        with fileinput.input(combo_file, inplace=True) as fp:
             for line in fp:
                 match = self.output_regex.match(line.strip())
                 if match is not None:
@@ -60,10 +60,8 @@ class MosesRunner:
                     if model == "true" or model == "false":
                         continue
                     complexity = match.group(3).split(",")[2].split("=")[1]
-                    formatted_line = "%s,%s\n" % (model, complexity.strip())
-                    fp.write(formatted_line)
-
-        # Add the model,complexity header
+                    formatted_line = "%s,%s" % (model, complexity.strip())
+                    print(formatted_line)
 
         with open(combo_file, "r+") as fp:
             content = fp.read()
