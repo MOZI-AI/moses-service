@@ -43,11 +43,11 @@ class TestMosesRun(unittest.TestCase):
         moses_runner.run_moses()
         test_combo_file = os.path.join(TEST_DATA_DIR, self.output_file)
 
-        moses_runner.format_combo(test_combo_file)
+        output_file = moses_runner.format_combo(test_combo_file)
 
         test_regex = re.compile(r"(.+),(\d+)")
 
-        with open(test_combo_file, "r") as f:
+        with open(output_file, "r") as f:
             for i, line in enumerate(f):
                 if i == 0: # header
                     self.assertEqual(line.strip(), "model,complexity")

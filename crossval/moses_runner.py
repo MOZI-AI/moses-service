@@ -51,19 +51,18 @@ class MosesRunner:
         :param combo_file: The path to the raw combo output
         :return:
         """
+        tmpfile = tempfile.NamedTemporaryFile().name
+        with open(combo_file, "r") as fp:
+            with open(tmpfile, "w") as tmfp:
+                tmfp.write("model,complexity\n")
+                for line in fp:
+                    match = self.output_regex.match(line.strip())
+                    if match is not None:
+                        model = match.group(2).strip()
+                        if model == "true" or model == "false":
+                            continue
+                        complexity = match.group(3).split(",")[2].split("=")[1]
+                        formatted_line = "%s,%s\n" % (model, complexity.strip())
+                        tmfp.write(formatted_line)
 
-        with fileinput.input(combo_file, inplace=True) as fp:
-            for line in fp:
-                match = self.output_regex.match(line.strip())
-                if match is not None:
-                    model = match.group(2).strip()
-                    if model == "true" or model == "false":
-                        continue
-                    complexity = match.group(3).split(",")[2].split("=")[1]
-                    formatted_line = "%s,%s" % (model, complexity.strip())
-                    print(formatted_line)
-
-        with open(combo_file, "r+") as fp:
-            content = fp.read()
-            fp.seek(0, 0)
-            fp.write("%s,%s\n%s" % ("model", "complexity", content))
+        return tmpfile

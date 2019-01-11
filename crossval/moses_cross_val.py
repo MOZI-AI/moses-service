@@ -13,7 +13,6 @@ from utils.feature_count import combo_parser, ComboTreeTransform
 from scipy import stats
 import tempfile
 
-
 class CrossValidation:
     """
     This class runs the cross-validation.
@@ -118,9 +117,8 @@ class CrossValidation:
                 self.logger.error("Moses run into error: %s" % stderr.decode("utf-8"))
                 raise ChildProcessError(stderr.decode("utf-8"))
 
-            moses_runner.format_combo(output_file)
             self.runs += 1
-            yield output_file
+            yield moses_runner.format_combo(output_file)
 
     def on_progress_update(self):
         """

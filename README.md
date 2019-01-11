@@ -9,7 +9,7 @@
 The [MOSES](https://github.com/opencog/moses) service for SingularityNET
 
 
-The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for Supervised classification of SNP or Gene Expression data. 
+The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for Supervised classification of Gene Expression data.
 
 
 #### Running the Service
@@ -52,3 +52,8 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     This will output a link where you can poll the status and download the result files once the analysis is finished.
    
    NOTE: You can find a sample `options.yaml` file in the ``tests/data`` directory of the project
+
+
+#### Calling the Service
+
+You can find details on how to call the service on the github page [here](habush.github.io/moses-service/users_guide/moses-service.html)
