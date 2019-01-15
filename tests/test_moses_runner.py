@@ -47,8 +47,8 @@ class TestMosesRun(unittest.TestCase):
 
         test_regex = re.compile(r"(.+),(\d+)")
 
-        with open(output_file, "r") as f:
-            for i, line in enumerate(f):
+        with open(output_file) as fp:
+            for i, line in enumerate(fp):
                 if i == 0: # header
                     self.assertEqual(line.strip(), "model,complexity")
                 else:

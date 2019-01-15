@@ -52,7 +52,7 @@ class CrossValidation:
         """
         x, cols, cv = self.split_dataset()
         for i, (train_index, test_index) in enumerate(cv):
-            train_file, test_file = tempfile.NamedTemporaryFile().name, tempfile.NamedTemporaryFile().name
+            train_file, test_file = tempfile.NamedTemporaryFile(mode="w+").name, tempfile.NamedTemporaryFile("w+").name
 
             seeds = self._generate_seeds(self.session.crossval_options["randomSeed"])
             x_train, x_test = x[train_index], x[test_index]
@@ -107,10 +107,10 @@ class CrossValidation:
         :return: file: the output file containing the MOSES models
         """
         for seed in seeds:
-            output_file = tempfile.NamedTemporaryFile().name
+            output_file = tempfile.NamedTemporaryFile(mode="w+")
             moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
-            moses_runner = MosesRunner(file, output_file, moses_options)
+            moses_runner = MosesRunner(file, output_file.name, moses_options)
             returncode, stdout, stderr = moses_runner.run_moses()
 
             if returncode != 0:
@@ -244,8 +244,9 @@ class CrossValidation:
         dfs = []
         for file in files[1:]:
             dfs.append(pd.read_csv(file))
-
         if len(dfs) > 0:
             df1.append(dfs)
 
         df1.to_csv(fold_file, index=False)
+
+        any(os.remove(k) for k in files)

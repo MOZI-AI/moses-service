@@ -6,6 +6,7 @@ import re
 import tempfile
 import fileinput
 
+
 class MosesRunner:
     """
     A class that handles running of the MOSES binary program
@@ -51,18 +52,19 @@ class MosesRunner:
         :param combo_file: The path to the raw combo output
         :return:
         """
-        tmpfile = tempfile.NamedTemporaryFile().name
-        with open(combo_file, "r") as fp:
-            with open(tmpfile, "w") as tmfp:
-                tmfp.write("model,complexity\n")
-                for line in fp:
-                    match = self.output_regex.match(line.strip())
-                    if match is not None:
-                        model = match.group(2).strip()
-                        if model == "true" or model == "false":
-                            continue
-                        complexity = match.group(3).split(",")[2].split("=")[1]
-                        formatted_line = "%s,%s\n" % (model, complexity.strip())
-                        tmfp.write(formatted_line)
 
-        return tmpfile
+        fd, tmp_file = tempfile.mkstemp(prefix="seed")
+
+        with open(fd, "w") as fp:
+            fp.write("model,complexity\n")
+            for line in combo_file:
+                match = self.output_regex.match(line.strip())
+                if match is not None:
+                    model = match.group(2).strip()
+                    if model == "true" or model == "false":
+                        continue
+                    complexity = match.group(3).split(",")[2].split("=")[1]
+                    formatted_line = "%s,%s\n" % (model, complexity.strip())
+                    fp.write(formatted_line)
+
+        return tmp_file
