@@ -43,6 +43,7 @@ if APP_PORT == 80:
 else:
     MOZI_URI = f"http://{str(SERVER_ADDR)}:{APP_PORT}"
 
+GRPC_HOST = "localhost"
 GRPC_PORT = "5003"
 
 

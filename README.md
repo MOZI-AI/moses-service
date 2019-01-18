@@ -45,7 +45,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     Replace **_<options file>_** with a _.yaml_ file containing the moses and cross-validation **_<dataset file>_** with the path to file you want to run analysis on
     Inputs:
   - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
-  - `data`: csv file with observations in rows and binary features in columns. see [above](#data) for a discussion of prepairing specific experimental data types.
+  - `data`: csv file with observations in rows and binary features in columns. See the doc [here](https://habush.github.io/moses-service/users_guide/moses-service.html) for a discussion of prepairing specific experimental data types.
     
     ``$ python -m service.moses_service_client <options-file> <dataset-file>``
     
@@ -53,6 +53,26 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
    
    NOTE: You can find a sample `options.yaml` file in the ``tests/data`` directory of the project
 
+#### Options
+```
+moses_opts: "-j8 --balance 1 \
+  -m 10000 -W1 \
+  --output-cscore 1 --result-count 100 \
+feature selection parameters
+  --enable-fs 1 --fs-algo simple --fs-target-size 4 \
+  --fs-focus all --fs-seed init \
+# hill climbing parameters
+  --hc-widen-search 1 --hc-crossover-min-neighbors 5000 \
+  --hc-fraction-of-nn .3 --hc-crossover-pop-size 1000 \
+  --reduct-knob-building-effort 1 --complexity-ratio 3"
+
+cross_val_opts:
+    folds: 3
+    random_seed: 2
+    test_size: 0.3
+
+target_feature: "case"
+```
 
 #### Calling the Service
 

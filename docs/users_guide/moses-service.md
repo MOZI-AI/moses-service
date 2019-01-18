@@ -36,6 +36,7 @@ Clone this repository:
 
 ```
 $ git clone https://github.com/Habush/moses-service.git
+
 $ cd mozi_snet_service
 ```
 
@@ -45,6 +46,8 @@ $ cd mozi_snet_service
 a. Install the `mozi-cli` python tool for generating the query.json file used to call the file
 
 ```
+$ pip install mozi-cli
+
 $ mozi-cli [dataset-file] [path-to-save-output]
 ```
 Look at the documentation for mozi-cli [here](https://github.com/Habush/mozi-service-cli)
@@ -62,26 +65,6 @@ description: "Analysis started"
 
 *Note:* you can use this service through the [SingularityNET DApp](beta.singularitynet.io)
 
-#### Options
-```
-moses_opts: "-j8 --balance 1 \
-  -m 10000 -W1 \
-  --output-cscore 1 --result-count 100 \
-feature selection parameters
-  --enable-fs 1 --fs-algo simple --fs-target-size 4 \
-  --fs-focus all --fs-seed init \
-# hill climbing parameters
-  --hc-widen-search 1 --hc-crossover-min-neighbors 5000 \
-  --hc-fraction-of-nn .3 --hc-crossover-pop-size 1000 \
-  --reduct-knob-building-effort 1 --complexity-ratio 3"
-
-cross_val_opts:
-    folds: 3
-    random_seed: 2
-    test_size: 0.3
-
-target_feature: "case"
-```
 
 ## Contributing and Reporting Issues
 

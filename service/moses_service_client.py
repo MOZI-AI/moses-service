@@ -6,7 +6,7 @@ from service_specs.moses_service_pb2_grpc import MosesServiceStub
 import base64
 import sys
 import yaml
-from config import GRPC_PORT, setup_logging
+from config import GRPC_HOST, GRPC_PORT, setup_logging
 import logging
 
 setup_logging()
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 3:
         try:
-            channel = grpc.insecure_channel(f"localhost:{GRPC_PORT}")
+            channel = grpc.insecure_channel(f"{GRPC_HOST}:{GRPC_PORT}")
             stub = MosesServiceStub(channel)
             result = run_analysis(stub, sys.argv[1], sys.argv[2])
             logger.info(result)
