@@ -30,7 +30,7 @@ jobs:
                       ssh $SSH_USER@$SERVER bash << EOF
                         cd ~/snet
 
-                        if [ ! -d "mozi_snet_service" ]; then
+                        if [ ! -d "moses-service" ]; then
                             # clone the repo if it doesn't exist
                             git clone --recursive https://github.com/Habush/moses-service.git
                         else
@@ -39,7 +39,7 @@ jobs:
 
                         export APP=8080
                         export SERVICE_ADDR=46.4.115.181
-                        cd mozi_snet_service;
+                        cd moses-service;
 
                         docker-compose stop; # stop the containers if they are runnning
 
