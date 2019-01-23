@@ -1,7 +1,7 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 import grpc
-from service_specs.moses_service_pb2 import AnalysisParameters, CrossValOptions
+from service_specs.moses_service_pb2 import AnalysisParameters, CrossValOptions, Filter
 from service_specs.moses_service_pb2_grpc import MosesServiceStub
 import base64
 import sys
@@ -12,7 +12,6 @@ import logging
 setup_logging()
 
 logger = logging.getLogger("client_log")
-
 
 
 def read_file(location):
@@ -30,7 +29,10 @@ def run_analysis(stub, opts_file, file_path):
 
     cross_val = CrossValOptions(folds=opts["cross_val_opts"]["folds"], testSize=opts["cross_val_opts"]["test_size"],
                                 randomSeed=opts["cross_val_opts"]["random_seed"])
-    payload = AnalysisParameters(mosesOpts=opts["moses_opts"], crossValOpts=cross_val, target_feature=opts["target_feature"],
+
+    filter_val = Filter(score=opts["filter"]["score"], value=opts["filter"]["value"])
+    payload = AnalysisParameters(mosesOpts=opts["moses_opts"], crossValOpts=cross_val,
+                                 target_feature=opts["target_feature"], filter=filter_val,
                                  dataset=dataset)
 
     return stub.StartAnalysis(payload)

@@ -1,24 +1,45 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-from celery import Celery
-import traceback
+import base64
 import logging
-import pymongo
-from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR, EXPIRY_SPAN, SCAN_INTERVAL, setup_logging
-import time
-from crossval.moses_cross_val import CrossValidation
-from models.dbmodels import Session
 import os
 import shutil
-import base64
+import time
+import traceback
 from datetime import timedelta
-
+import pymongo
+from celery import Celery, current_app
+from celery.bin import worker
+from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR, EXPIRY_SPAN, SCAN_INTERVAL, setup_logging
+from crossval.moses_cross_val import CrossValidation
+from models.dbmodels import Session
+from crossval.filters import loader
 
 celery = Celery('mozi_snet', broker=CELERY_OPTS["CELERY_BROKER_URL"])
 celery.conf.update(CELERY_OPTS)
 setup_logging()
 
 
+def write_dataset(b_string, mnemonic):
+    """
+    Writes the dataset file and returns the directory it is saved in
+    :param b_string: the base64 encoded string of the dataset file
+    :param mnemonic: the mnemonic of the associated session
+    :return: cwd: the directory where the dataset file is saved
+    """
+    swd = os.path.join(DATASET_DIR, f"session_{mnemonic}")
+
+    if not os.path.exists(swd):
+        os.makedirs(swd)
+
+    file_path = os.path.join(swd, f"dataset.csv")
+
+    fb = base64.b64decode(b_string)
+
+    with open(file_path, "wb") as fp:
+        fp.write(fb)
+
+    return swd, file_path
 
 
 def get_expired_sessions(db, time_span):
@@ -44,7 +65,7 @@ def setup_periodic_task(sender, **kwargs):
     sender.add_periodic_task(SCAN_INTERVAL, scan_expired_sessions.s(EXPIRY_SPAN), name="Scan for expired sessions")
 
 
-@celery.task
+@celery.task(name="task.task_runner.start_analysis")
 def start_analysis(**kwargs):
     """
     A celery task that runs the MOSES analysis
@@ -56,8 +77,9 @@ def start_analysis(**kwargs):
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
     logger = logging.getLogger("mozi_snet")
 
+    swd, file_path = write_dataset(kwargs["dataset"], kwargs["mnemonic"])
     session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
-                      kwargs["dataset"], kwargs["mnemonic"], kwargs["target_feature"])
+                      file_path, kwargs["mnemonic"], kwargs["target_feature"])
 
     session.save(db)
 
@@ -67,7 +89,8 @@ def start_analysis(**kwargs):
     session.update_session(db)
 
     try:
-        moses_cross_val = CrossValidation(session, db, kwargs["swd"])
+        filter_cls = loader.get_filter(kwargs["filter_opts"]["score"])
+        moses_cross_val = CrossValidation(session, db, filter_cls, kwargs["filter_opts"]["value"], swd)
         logger.info("Started cross-validation run")
         moses_cross_val.run_folds()
         logger.info("Cross-validation done successfully")
@@ -125,3 +148,10 @@ def delete_expired_sessions(sessions):
 
     except Exception as ex:
         logger.error(f"Ran into error f{ex.__str__()}")
+
+
+if __name__ == "__main__":
+    app = current_app._get_current_object()
+    worker = worker.worker(app=app)
+
+    worker.run(**CELERY_OPTS)

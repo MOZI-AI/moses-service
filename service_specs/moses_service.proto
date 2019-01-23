@@ -6,11 +6,17 @@ message CrossValOptions {
     int32 randomSeed = 3;
 }
 
+message Filter {
+    string score = 1;
+    float value = 2;
+}
+
 message AnalysisParameters {
     string mosesOpts = 1;
     CrossValOptions crossValOpts = 2;
     string target_feature = 3;
-    string dataset = 4;
+    Filter filter = 4;
+    string dataset = 5;
 }
 
 message Result {

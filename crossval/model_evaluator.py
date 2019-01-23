@@ -1,3 +1,5 @@
+from models.objmodel import Score
+
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 import numpy as np
@@ -18,11 +20,10 @@ class ModelEvaluator:
         self.target_feature = target_feature
         self.logger = logging.getLogger("mozi_snet")
 
-    def run_eval(self, models_df, input_file):
+    def run_eval(self, models, input_file):
         """
-        Takes a combo file containing MOSES programs and an input file on which it evaluates each program on.
-        :param
-        combo_file: the location of the combo file
+        Evaluate a list of model objects against an input file
+        :param: models: list of model objects
         :param input_file: the location of the input file
         :return: matrix:
         nxm matrix where n is the number of models and m is the number of samples. the matrix contains the predicted
@@ -30,17 +31,16 @@ class ModelEvaluator:
         """
 
         input_df = pd.read_csv(input_file)
-
-        models = models_df.model.values
-
-        num_models, num_samples = models_df.shape[0], input_df.shape[0]
+        num_models, num_samples = len(models), input_df.shape[0]
         matrix = np.empty((num_models, num_samples), dtype=int)
 
         temp_eval_file = tempfile.NamedTemporaryFile().name
+        eval_log = tempfile.NamedTemporaryFile().name
 
-        for i, model in enumerate(models):
-            cmd = ["eval-table", "-i", input_file, "-c", model, "-o", temp_eval_file, "-u", self.target_feature]
-            self.logger.debug("Evaluating model %s" % model)
+        for i, moses_model in enumerate(models):
+            cmd = ['eval-table', "-i", input_file, "-c", moses_model.model, "-o", temp_eval_file, "-u",
+                   self.target_feature, "-f", eval_log]
+            self.logger.debug("Evaluating model %s" % moses_model.model)
             process = subprocess.Popen(args=cmd, stdout=subprocess.PIPE)
 
             stdout, stderr = process.communicate()
@@ -62,23 +62,16 @@ class ModelEvaluator:
         :param input_file: this the test file containing the actual target values
         :return: matrix: returns an nx4 matrix where n is the number of model.
         """
-        score_matrix = np.empty((matrix.shape[0], 5))
+        score_matrix = []
 
         df = pd.read_csv(input_file)
         target_value = df[self.target_feature].values
         null_value = np.zeros((len(target_value),))
 
-        for i, row in enumerate(matrix):
-            if np.unique(row).shape[0] == 1:
-                # if the model is either true or false model, it has no significance. Hence assign -1 for each value
-                neg_ar = np.empty((5,))
-                neg_ar.fill(-1)
-                score_matrix[i] = neg_ar
-            else:
-                scores = ModelEvaluator._get_scores(target_value, row)
-                p_value = ModelEvaluator.mcnemar_test(target_value, row, null_value)
-                scores.append(p_value)
-                score_matrix[i] = np.array(scores)
+        for row in matrix:
+            recall, precision, accuracy, f_score = ModelEvaluator._get_scores(target_value, row)
+            p_value = ModelEvaluator.mcnemar_test(target_value, row, null_value)
+            score_matrix.append(Score(recall, precision, accuracy, f_score, p_value))
 
         return score_matrix
 

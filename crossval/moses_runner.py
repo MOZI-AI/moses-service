@@ -1,5 +1,6 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
+from models.objmodel import MosesModel
 import subprocess
 import logging
 import re
@@ -48,23 +49,21 @@ class MosesRunner:
 
     def format_combo(self, combo_file):
         """
-        Format the raw combo output returned by moses into a file that has only the model and the combo complexity score
+        Build model objects from the moses output
         :param combo_file: The path to the raw combo output
         :return:
         """
 
-        fd, tmp_file = tempfile.mkstemp(prefix="seed")
-
-        with open(fd, "w") as fp:
-            fp.write("model,complexity\n")
-            for line in combo_file:
+        models = []
+        with open(combo_file, "r") as fp:
+            for line in fp:
                 match = self.output_regex.match(line.strip())
                 if match is not None:
                     model = match.group(2).strip()
                     if model == "true" or model == "false":
                         continue
                     complexity = match.group(3).split(",")[2].split("=")[1]
-                    formatted_line = "%s,%s\n" % (model, complexity.strip())
-                    fp.write(formatted_line)
+                    models.append(MosesModel(model, complexity))
 
-        return tmp_file
+        self.logger.info(f"Num of combo models {len(models)}")
+        return models

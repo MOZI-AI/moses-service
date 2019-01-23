@@ -10,7 +10,16 @@ class Session:
 
     def __init__(self, id, moses_options, crossval_options, dataset, mnemonic, target_feature="case"):
         self.id = id
-        self.moses_options = moses_options
+
+        if "W1" in moses_options:
+            self.moses_options = moses_options
+
+        else:
+            self.moses_options = moses_options + " -W1"
+
+        if "output-cscore" not in self.moses_options:
+            self.moses_options = self.moses_options + " --output-cscore 1"
+
         self.crossval_options = crossval_options
         self.dataset = dataset
         self.status = 0
@@ -67,7 +76,8 @@ class Session:
             })
 
         if result:
-            session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"], result["mnemonic"] ,result["target_feature"])
+            session = Session(result["id"], result["moses_options"], result["crossval_options"], result["dataset"],
+                              result["mnemonic"], result["target_feature"])
             session.status = result["status"]
             session.message = result["message"]
             session.start_time = result["start_time"]
@@ -106,5 +116,3 @@ class Session:
             result.append(session)
 
         return result
-
-

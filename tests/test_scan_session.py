@@ -1,6 +1,6 @@
 import os
 
-__author__ = 'Abdulrahman Semrie<hsamireh@gmail.com>'
+__author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 import unittest
 from unittest.mock import patch, MagicMock

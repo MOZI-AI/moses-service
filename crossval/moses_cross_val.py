@@ -1,10 +1,10 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
+from models.objmodel import EnsembleModel
 import os
 from crossval.moses_runner import MosesRunner
 from sklearn.model_selection import StratifiedShuffleSplit
 import pandas as pd
-import numpy as np
 import random
 import logging
 from crossval.model_evaluator import ModelEvaluator
@@ -13,12 +13,13 @@ from utils.feature_count import combo_parser, ComboTreeTransform
 from scipy import stats
 import tempfile
 
+
 class CrossValidation:
     """
     This class runs the cross-validation.
     """
 
-    def __init__(self, session, db, cwd):
+    def __init__(self, session, db, filter_type, value, cwd):
         """
         :param session: The session object that has the moses, cross-validation options and other metadata
         :param db: The db connection object
@@ -27,6 +28,8 @@ class CrossValidation:
         self.session = session
         self.cwd = cwd
         self.db = db
+        self.filter = filter_type
+        self.filter_value = value
         self.logger = logging.getLogger("mozi_snet")
         self.fold_files = []
         self._set_dir()
@@ -35,7 +38,7 @@ class CrossValidation:
         self.runs = 0
 
         self.tree_transformer = ComboTreeTransform()
-
+        self.result_models = {}
         self.logger.info(f"Current working dir: {os.getcwd()}")
 
     def _set_dir(self):
@@ -58,29 +61,24 @@ class CrossValidation:
             x_train, x_test = x[train_index], x[test_index]
             pd.DataFrame(x_train, columns=cols).to_csv(train_file, index=False)
             pd.DataFrame(x_test, columns=cols).to_csv(test_file, index=False)
-            files = []
-
-            for file in self.run_seeds(seeds, i, train_file):
-                files.append(file)
+            fold_models = []
+            for models in self.run_seeds(seeds, i, train_file):
+                fold_models.extend(models)
 
             fold_fname = f"fold_{i}.csv"
             self.fold_files.append(fold_fname)
-
-            CrossValidation.merge_fold_files(fold_fname, files)
+            self.logger.info(f"Got {len(fold_models)} for fold_{i}")
+            # CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
-            self.score_fold(fold_fname, train_file, test_file)
-            self.count_features(fold_fname)
-
+            scored_models = self.score_fold(fold_models, train_file, test_file)
+            self.count_features(scored_models)
+            self.result_models[fold_fname] = scored_models
+            self.write_models(fold_fname, scored_models)
             self.on_progress_update()
 
-        # save the feature count file
-        models = []
-
-        for fold in self.fold_files:
-            models.extend(pd.read_csv(fold).model.values[0:5])
-
-        ensemble_df = self.majority_vote(models)
-        ensemble_df.to_csv("ensemble.csv", index=False)
+        ensemble_df = self.majority_vote()
+        if ensemble_df is not None:
+            ensemble_df.to_csv("ensemble.csv", index=False)
         feature_count_df = pd.DataFrame.from_dict(self.tree_transformer.fcount)
 
         feature_count_df.to_csv("feature_count.csv")
@@ -118,7 +116,7 @@ class CrossValidation:
                 raise ChildProcessError(stderr.decode("utf-8"))
 
             self.runs += 1
-            yield moses_runner.format_combo(output_file)
+            yield moses_runner.format_combo(output_file.name)
 
     def on_progress_update(self):
         """
@@ -133,65 +131,60 @@ class CrossValidation:
 
         self.session.update_session(self.db)
 
-    def score_fold(self, fold_file, train_file, test_file):
+    def score_fold(self, models, train_file, test_file):
         """
         Score the models from a fold on both test and training partitions
-        :param fold_file: the model file containing the models for this fold
+        :param models: a list of model objects
         :param train_file: The file containing the train set
         :param test_file: The file containing the test set
         :return:
         """
         model_evaluator = ModelEvaluator(self.session.target_feature)
 
-        fold_df = pd.read_csv(fold_file)
-        test_matrix = model_evaluator.run_eval(fold_df, test_file)
-        train_matrix = model_evaluator.run_eval(fold_df, train_file)
+        test_matrix = model_evaluator.run_eval(models, test_file)
+        train_matrix = model_evaluator.run_eval(models, train_file)
 
         test_scores = model_evaluator.score_models(test_matrix, test_file)
         train_scores = model_evaluator.score_models(train_matrix, train_file)
 
-        score_matrix = np.concatenate((test_scores, train_scores), axis=1)
+        for moses_model, score in zip(models, test_scores):
+            moses_model.test_score = score
 
-        df = self.filter_scores(fold_file, score_matrix)
+        for moses_model, score in zip(models, train_scores):
+            moses_model.train_score = score
 
-        df.to_csv(fold_file, index=False)
+        return models
 
-    def filter_scores(self, fold_file, scores):
+    def write_models(self, fold_name, models):
         """
-        Filter scores of null models and models that have NAN score values
-        :param fold_file: The model file for a given fold
-        :param scores: The score matrix for the models of a fold
-        :return: df: a pandas dataframe that contains the models with their scores on the test and train sets
+        This method saves the models for a fold into a file
+        :param fold_name: The file name for the file
+        :param models: The list of model objects to write to file
+        :return:
         """
-        labels = ["recall_test ", "precision_test", "accuracy_test", "f1_test", "p_value_test",
-                  "recall_train", "precision_train", "accuracy_train", "f1_train", "p_value_train"]
+        data = {"model": [], "complexity": [], "recall_test": [], "precision_test": [], "accuracy_test": [],
+                "f1_test": [], "p_value_test": [],
+                "recall_train": [], "precision_train": [], "accuracy_train": [], "f1_train": [], "p_value_train": []}
 
-        df = pd.read_csv(fold_file)
+        for model in models:
+            for k in data:
+                data[k].append(model[k])
 
-        for i, row in enumerate(scores):
-            if any(score < 0 or math.isnan(score) for score in scores[i]):
-                df.drop(df.index[[i]])
-            else:
-                for label, score in zip(labels, row):
-                    df.loc[i, label] = score
+        df = pd.DataFrame(data)
+        df.to_csv(fold_name, index=False)
 
-        return df
-
-    def count_features(self, fold_file):
+    def count_features(self, models):
         """
         Count the unique features that are found in models of a fold.
         :param fold_file:
         :return:
         """
-        df = pd.read_csv(fold_file)
 
-        models = df["model"].values
-
-        for model in models:
-            tree = combo_parser.parse(model)
+        for moses_model in models:
+            tree = combo_parser.parse(moses_model.model)
             self.tree_transformer.transform(tree)
 
-    def majority_vote(self, models):
+    def majority_vote(self):
         """
         Takes the top five models from each fold and does a majority voting.
          It scores the combined models on the whole dataset
@@ -199,25 +192,33 @@ class CrossValidation:
         :return: ensemble_df: a Pandas dataframe containing the models with
         their individual scores and the combined score
         """
-        model_df = pd.DataFrame(models, columns=["model"])
+        data = {"model": [], "recall": [], "precision": [], "accuracy": [], "f1_score": [], "p_value": []}
         model_eval = ModelEvaluator(self.session.target_feature)
+        filtered_models = []
+        for _, v in self.result_models.items():
+            res = self.filter.cut_off(v, self.filter_value)
+            if len(res) > 0:
+                filtered_models.extend(res)
 
-        matrix = model_eval.run_eval(model_df, self.session.dataset)
+        if len(filtered_models) == 0:
+            return None
+        ensemble_models = list(map(lambda k: EnsembleModel(k.model, None), filtered_models))
+        matrix = model_eval.run_eval(ensemble_models, self.session.dataset)
         majority_matrix = stats.mode(matrix, nan_policy="omit").mode
 
         score_matrix = model_eval.score_models(matrix, self.session.dataset)
         ensemble_score = model_eval.score_models(majority_matrix, self.session.dataset)
 
-        arr = []
-        for model, score in zip(models, score_matrix):
-            row = list(score)
-            row.insert(0, model)
-            arr.append(row)
+        ensemble_model = EnsembleModel("ensemble", ensemble_score[0])
+        ensemble_models.append(ensemble_model)
+        score_matrix.append(ensemble_score[0])
 
-        ensemble_score = list(ensemble_score[0])
-        ensemble_score.insert(0, "ensemble")
-        arr.append(ensemble_score)
-        ensemble_df = pd.DataFrame(arr, columns=["model", "recall", "precision", "accuracy", "f1_score", "p_value"])
+        for model, score in zip(ensemble_models, score_matrix):
+            model.score = score
+            for k in data:
+                data[k].append(model[k])
+
+        ensemble_df = pd.DataFrame(data)
 
         return ensemble_df
 
@@ -230,23 +231,3 @@ class CrossValidation:
         :return:
         """
         return random.sample(range(1, num_pop), num_seeds)
-
-    @staticmethod
-    def merge_fold_files(fold_file, files):
-        """
-        Merges each model file for each seed into one
-        :param fold_file: The fold file to merge all the models
-        :param files: An array that contains file names for each seed
-        :return:
-        """
-        df1 = pd.read_csv(files[0])
-
-        dfs = []
-        for file in files[1:]:
-            dfs.append(pd.read_csv(file))
-        if len(dfs) > 0:
-            df1.append(dfs)
-
-        df1.to_csv(fold_file, index=False)
-
-        any(os.remove(k) for k in files)

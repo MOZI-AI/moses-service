@@ -1,3 +1,6 @@
+from crossval.filters.loader import get_filter
+from models.objmodel import MosesModel, Score
+
 __author__ = "Abdulrahman Semrie<xabush@singularitynet.io>"
 import unittest
 from models.dbmodels import Session
@@ -36,7 +39,8 @@ class TestCrossValidation(unittest.TestCase):
                             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1]]
 
     def test_run_folds(self):
-        moses_cross_val = CrossValidation(self.session, None, TEST_DATA_DIR)
+        filter_type = get_filter("accuracy")
+        moses_cross_val = CrossValidation(self.session, None, filter_type, 0.7, TEST_DATA_DIR)
         mock = MagicMock()
         moses_cross_val.on_progress_update = mock
 
@@ -58,15 +62,25 @@ class TestCrossValidation(unittest.TestCase):
         train_df, test_df = train_test_split(df, test_size=0.3)
 
         test_df.to_csv(self.test_file, index=False)
-
-        moses_cross_val = CrossValidation(self.session, None, TEST_DATA_DIR)
+        filter_type = get_filter("accuracy")
+        moses_cross_val = CrossValidation(self.session, None, filter_type, 0.4, TEST_DATA_DIR)
         moses_cross_val.test_file = self.test_file
 
-        models = ["and($APLNR !$AQP3)", "and(!$ANKRD46 $APLNR)", "$APLNR", "or(and($APLNR !$AQP3) !$ANKRD46)", "$APLNR"]
+        model_1 = MosesModel("and($ARDK, $AKFR)", 2)
+        model_1.test_score = Score(0.8, 0.3, 0.7, 0.4, 0.2)
+        model_1.train_score = Score(0, 0, 0, 0, 0)
+        model_2 = MosesModel("or($RIPS, $RFS)", 3)
+        model_2.train_score = Score(0, 0, 0, 0, 0)
+        model_2.test_score = Score(0.5, 0.3, 0.6, 0.4, 0.2)
+        model_3 = MosesModel("and($ARDK, $AKFR)", 2)
+        model_3.train_score = Score(0, 0, 0, 0, 0)
+        model_3.test_score = Score(0.4, 0.3, 0.2, 0.4, 0.2)
 
-        ensemble_df = moses_cross_val.majority_vote(models)
+        models = {"fold_1": [model_1, model_2], "fold_2": [model_3]}
+        moses_cross_val.result_models = models
+        ensemble_df = moses_cross_val.majority_vote()
 
-        self.assertEqual(ensemble_df.shape, (6, 6))
+        self.assertEqual(ensemble_df.shape, (3, 6))
 
     def tearDown(self):
         if os.path.exists(self.test_file): os.remove(self.test_file)

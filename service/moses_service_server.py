@@ -14,6 +14,7 @@ import sys
 import os
 import base64
 import pandas as pd
+import tempfile
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -23,18 +24,18 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
     def StartAnalysis(self, request, context):
         logger = logging.getLogger("mozi_snet")
 
-        crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize, "randomSeed": request.crossValOpts.randomSeed }
+        crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize, "randomSeed": request.crossValOpts.randomSeed}
         moses_opts, dataset, target_feature = request.mosesOpts, request.dataset, request.target_feature
-
+        filter_opts = {"score": request.filter.score, "value": request.filter.value}
         logger.info(f"Received request with Moses Options: {moses_opts}\n Cross Validation Options: {crossval_opts}\n")
 
         session_id = uuid.uuid4()
         mnemonic = encode(session_id)
-        swd, file_path = write_dataset(dataset, mnemonic)
 
-        if is_valid_dataset(file_path, target_feature):
+        if is_valid_dataset(dataset, target_feature):
             start_analysis.delay(id=session_id, moses_options=moses_opts, crossval_options=crossval_opts,
-                                 dataset=file_path, mnemonic=mnemonic, target_feature=target_feature, swd=swd)
+                                 filter_opts=filter_opts, dataset=dataset, mnemonic=mnemonic,
+                                 target_feature=target_feature)
 
             url = f"{MOZI_URI}/?id={mnemonic}"
             return Result(resultUrl=url, description="Analysis started")
@@ -47,36 +48,22 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
             return Result(resultUrl="", description="Validation error occurred")
 
 
-def write_dataset(b_string, mnemonic):
-    """
-    Writes the dataset file and returns the directory it is saved in
-    :param b_string: the base64 encoded string of the dataset file
-    :param mnemonic: the mnemonic of the associated session
-    :return: cwd: the directory where the dataset file is saved
-    """
-    swd = os.path.join(DATASET_DIR, f"session_{mnemonic}")
-
-    if not os.path.exists(swd):
-        os.makedirs(swd)
-
-    file_path = os.path.join(swd, f"dataset.csv")
-
-    fb = base64.b64decode(b_string)
-
-    with open(file_path, "wb") as fp:
-        fp.write(fb)
-
-    return swd, file_path
-
-
-def is_valid_dataset(path, target_feature):
+def is_valid_dataset(b_string, target_feature):
     """
     Checks if a dataset is a valid or not
-    :param path: The path to the dataset file
+    :param b_string: The base64 encoded string of the dataset file
     :param target_feature: The target feature column name
     :return:
     """
-    df = pd.read_csv(path)
+
+    fd, file_path = tempfile.mkstemp()
+
+    fb = base64.b64decode(b_string)
+
+    with open(fd, "wb") as fp:
+        fp.write(fb)
+
+    df = pd.read_csv(file_path)
 
     # check if the target_feature exists
     if not {target_feature}.issubset(df.columns):
@@ -84,7 +71,9 @@ def is_valid_dataset(path, target_feature):
 
     invalid_df = df.filter(regex="[$!()]+", axis="columns")
 
-    return len(invalid_df.columns) == 0
+    valid = len(invalid_df.columns) == 0
+    os.remove(file_path)
+    return valid
 
 
 def serve(port=GRPC_PORT):
@@ -106,6 +95,6 @@ if __name__ == "__main__":
     server.start()
     try:
         while True:
-            time.sleep(8)
+            time.sleep(_ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
         server.stop(0)

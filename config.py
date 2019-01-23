@@ -26,7 +26,7 @@ try:
 
 except KeyError:
     MONGODB_URI = "http://localhost:27017"
-    REDIS_URI = "http://localhost:6913"
+    REDIS_URI = "redis://localhost:6379/0"
     DATASET_DIR = "/home/root"
     EXPIRY_SPAN = 14
     SCAN_INTERVAL = 3600 * 24  # every 24hrs

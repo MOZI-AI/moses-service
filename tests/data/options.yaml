@@ -6,3 +6,7 @@ cross_val_opts:
     test_size: 0.3
 
 target_feature: "case"
+
+filter:
+    score: "accuracy"
+    value: 0.4
