@@ -11,7 +11,7 @@ class Session:
     def __init__(self, id, moses_options, crossval_options, dataset, mnemonic, target_feature="case"):
         self.id = id
 
-        if "W1" in moses_options:
+        if "W 1" in moses_options:
             self.moses_options = moses_options
 
         else:
