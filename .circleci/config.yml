@@ -34,10 +34,11 @@ jobs:
                             # clone the repo if it doesn't exist
                             git clone --recursive https://github.com/Habush/moses-service.git
                         else
+                            git checkout -- .
                             git pull
                         fi
 
-                        export APP=8080
+                        export APP_PORT=8080
                         export SERVICE_ADDR=46.4.115.181
                         cd moses-service;
 
