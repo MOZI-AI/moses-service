@@ -89,8 +89,9 @@ def start_analysis(**kwargs):
     session.update_session(db)
 
     try:
+        filter_type, value = kwargs["filter_opts"]["score"], kwargs["filter_opts"]["value"]
         filter_cls = loader.get_filter(kwargs["filter_opts"]["score"])
-        moses_cross_val = CrossValidation(session, db, filter_cls, kwargs["filter_opts"]["value"], swd)
+        moses_cross_val = CrossValidation(session, db, filter_type, value, swd)
         logger.info("Started cross-validation run")
         moses_cross_val.run_folds()
         logger.info("Cross-validation done successfully")

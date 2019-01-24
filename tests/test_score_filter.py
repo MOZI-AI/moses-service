@@ -31,4 +31,21 @@ class TestScoreFilter(unittest.TestCase):
 
         result = acc_filter.cut_off(models, 0.6)
 
-        self.assertTrue(len(result) == 1)
+        self.assertEqual(len(result), 1)
+
+    def test_filter_null(self):
+        models = []
+        model_1 = MosesModel("and($ARDK, $AKFR)", 2)
+        model_1.test_score = Score(0.8, 0.3, 0.1, 0.4, 0.2)
+        model_1.train_score = Score(0.8, 0.3, 0.1, 0.4, 0.2)
+        models.append(model_1)
+        model_2 = MosesModel("or($RIPS, $RFS)", 3)
+        model_2.test_score = Score(0.5, 0.3, 0.1, 0.4, 0.2)
+        model_2.train_score = Score(0.5, 0.3, -1, 0.4, 0.2)
+        models.append(model_2)
+
+        null_filter = loader.get_filter("null")
+
+        result = null_filter.cut_off(models, 0)
+
+        self.assertEqual(len(result), 1)
