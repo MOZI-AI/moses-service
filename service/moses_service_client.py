@@ -32,7 +32,7 @@ def run_analysis(stub, opts_file, file_path):
 
     filter_val = Filter(score=opts["filter"]["score"], value=opts["filter"]["value"])
     payload = AnalysisParameters(mosesOpts=opts["moses_opts"], crossValOpts=cross_val,
-                                 target_feature=opts["target_feature"], filter=filter_val,
+                                 targetFeature=opts["target_feature"], filter=filter_val,
                                  dataset=dataset)
 
     return stub.StartAnalysis(payload)
