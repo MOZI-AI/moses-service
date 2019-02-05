@@ -14,7 +14,7 @@ message Filter {
 message AnalysisParameters {
     string mosesOpts = 1;
     CrossValOptions crossValOpts = 2;
-    string target_feature = 3;
+    string targetFeature = 3;
     Filter filter = 4;
     string dataset = 5;
 }
