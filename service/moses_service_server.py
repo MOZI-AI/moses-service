@@ -25,7 +25,7 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
         logger = logging.getLogger("mozi_snet")
 
         crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize, "randomSeed": request.crossValOpts.randomSeed}
-        moses_opts, dataset, target_feature = request.mosesOpts, request.dataset, request.target_feature
+        moses_opts, dataset, target_feature = request.mosesOpts, request.dataset, request.targetFeature
         filter_opts = {"score": request.filter.score, "value": request.filter.value}
         logger.info(f"Received request with Moses Options: {moses_opts}\n Cross Validation Options: {crossval_opts}\n")
 
