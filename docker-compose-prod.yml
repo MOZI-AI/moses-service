@@ -27,7 +27,7 @@ services:
 
   frontend:
       image: xabush/snet_react_app
-      container_name: react-app
+      container_name: result_ui-app
 
       environment:
           - SERVICE_ADDR=${SERVICE_ADDR}

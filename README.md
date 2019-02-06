@@ -20,7 +20,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     
 2. Go to the project folder and start docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
-    2a. Define the `APP_PORT`, `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the react app and `<ADDR>` to the address of the host that you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
+    2a. Define the `APP_PORT`, `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<ADDR>` to the address of the host that you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
 
 
 

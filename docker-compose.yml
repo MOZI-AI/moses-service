@@ -2,7 +2,7 @@ version: "3"
 services:
   moses_service:
       build: ./
-      container_name: moses_service
+      container_name: moses-service
       links:
         - mongo
         - redis
@@ -28,11 +28,11 @@ services:
 
   frontend:
       build:
-          context: react/
+          context: result_ui/
           args:
             - SERVER_ADDR=$SERVICE_ADDR
 
-      container_name: react-app
+      container_name: result-ui
 
       ports:
           - $APP_PORT:80
