@@ -28,7 +28,7 @@ services:
 
   frontend:
       build:
-          context: result_ui/
+          context: service-result/
           args:
             - SERVER_ADDR=$SERVICE_ADDR
 
