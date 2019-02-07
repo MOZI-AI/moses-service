@@ -1,7 +1,3 @@
-[submodule "result_ui"]
-	path = result_ui
-	url = https://github.com/mozi-ai/service-result.git
-
 [submodule "form_ui"]
     path = form_ui
     url = https://github.com/MOZI-AI/moses-service-ui.git
