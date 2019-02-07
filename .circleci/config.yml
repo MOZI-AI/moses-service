@@ -4,7 +4,7 @@ jobs:
     build:
         machine: true
         environment:
-            - container: moses_service
+            - container: moses-service
 
         working_directory: ~/mozi_snet_service
         steps:
