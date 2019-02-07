@@ -45,7 +45,7 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
             context.set_details(f"Invalid dataset.Dataset doesn't contain a column with named {target_feature} or has "
                                 f"invalid characters")
 
-            return Result(resultUrl="", description="Validation error occurred")
+            return Result(resultUrl="Validation error occurred", description=f"Dataset doesn't contain a column with named {target_feature} or has invalid characters")
 
 
 def is_valid_dataset(b_string, target_feature):
