@@ -9,7 +9,7 @@
 The [MOSES](https://github.com/opencog/moses) service for SingularityNET
 
 
-The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for Supervised classification of Gene Expression data.
+The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for supervised classification of high dimensional data sets with many more features than samples, such as whole genome sequencing data or gene expression data.
 
 
 #### Running the Service
