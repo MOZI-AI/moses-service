@@ -11,6 +11,7 @@ services:
           - "5003:5003"
           - "5000:5000"
           - "5002:5002"
+          - "5005:5005"
 
       environment:
           - MONGODB_URI=mongodb://mongo:27017/
