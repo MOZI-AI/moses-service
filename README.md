@@ -46,7 +46,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     Inputs:
   - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
   - `data`: csv file with observations or samples in rows and binary features in columns labeled **1** for **TRUE** and **0** for **FALSE** for each sample.  The first column should indicate the category label of the sample (**1** for **case** and **0** for **control**).  
- See the doc [here](https://habush.github.io/moses-service/users_guide/moses-service.html) for a discussion of prepairing specific experimental data types.
+ See the doc [here](https://mozi-ai.github.io/moses-service/users_guide/moses-service.html) for a discussion of prepairing specific experimental data types.
     
     ``$ python -m service.moses_service_client <options-file> <dataset-file>``
     
@@ -77,4 +77,4 @@ target_feature: "case"
 
 #### Calling the Service
 
-You can find details on how to call the service on the github page [here](habush.github.io/moses-service/users_guide/moses-service.html)
+You can find details on how to call the service on the github page [here](https://mozi-ai.github.io/moses-service/users_guide/moses-service.html)
