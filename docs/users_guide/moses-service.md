@@ -35,7 +35,7 @@ For numerically valued features such as transcript of protein levels, the median
 Clone this repository:
 
 ```
-$ git clone https://github.com/Habush/moses-service.git
+$ git clone https://github.com/mozi-ai/moses-service.git
 
 $ cd mozi_snet_service
 ```
@@ -43,17 +43,28 @@ $ cd mozi_snet_service
 ### Calling the service:
 
 
-a. Install the `mozi-cli` python tool for generating the query.json file used to call the file
+#### 1. Using the DApp
+
+1a. Upload a dataset prepared as suggested in the [Data](#data) section
+
+1b. Fill in the moses parameters, cross-validation parameters and the target feature by going through the form
+
+1c. Click Submit and sign your request to send it to the service
+
+
+#### 2. Using the snet-cli
+
+2a. Install the `mozi-cli` python tool for generating the query.json file used to call the file
 
 ```
 $ pip install mozi-cli
 
 $ mozi-cli [dataset-file] [path-to-save-output]
 ```
-Look at the documentation for mozi-cli [here](https://github.com/Habush/mozi-service-cli)
+Look at the documentation for mozi-cli [here](https://github.com/mozi-ai/mozi-service-cli)
 
 
-b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
+2b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
 
 ```
 $ snet client call 0 0.00000001 46.4.115.181:5002 StartAnalysis query.json
