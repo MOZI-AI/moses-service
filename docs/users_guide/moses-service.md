@@ -20,7 +20,7 @@ For genomic data, variants are naturally represented with a "one" value when pre
 
 For numerically valued features such as transcript of protein levels, the median norm can be used where an observation is coded "one" if it is greater than the median value for the feature across all observations.
 
-**Example dataset** \
+#### Example dataset
 Here is a sample dataset to use with the moses-service. One of the columns in the dataset should be set as **target feature**. In this dataset,  it is the first column named as **‘case’.**
 
 | case | A1BG | A1CF | A2M | A2M-AS1 | A2ML1 | A4GALT | A4GNT | AA06 | AAAS |
