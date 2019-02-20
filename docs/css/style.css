@@ -23,6 +23,7 @@ pre code {
 
 table {
    border-collapse: collapse !important;
+   margin-bottom: 32px;
 }
 
 td, th {
