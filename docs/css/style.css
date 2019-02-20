@@ -22,10 +22,10 @@ pre code {
 }
 
 table {
-   border-collapse: collapse;
+   border-collapse: collapse !important;
 }
 
 td, th {
-  border: solid 1px #aaa;
-  padding: 8px 16px
+  border: solid 1px #aaa !important;
+  padding: 8px 16px !important;
 }
