@@ -28,9 +28,9 @@ Here is a sample dataset to use with the moses-service. One of the columns in th
 | 1    | 1    | 1    | 0   | 1       | 1     | 0      | 1     | 1    | 0    |
 | 1    | 1    | 1    | 0   | 0       | 0     | 1      | 1     | 0    | 0    |
 | 1    | 1    | 1    | 0   | 0       | 1     | 1      | 1     | 1    | 0    |
-| 1    | 1    | 1    | 0   | 1       | 1     | 1      | 1     | 0    | 1    |
-| 1    | 1    | 1    | 0   | 0       | 1     | 0      | 1     | 1    | 0    |
-| 1    | 1    | 1    | 1   | 0       | 0     | 1      | 0     | 1    | 0    |
+| 0    | 1    | 1    | 0   | 1       | 1     | 1      | 1     | 0    | 1    |
+| 0    | 1    | 1    | 0   | 0       | 1     | 0      | 1     | 1    | 0    |
+| 0    | 1    | 1    | 1   | 0       | 0     | 1      | 0     | 1    | 0    |
 
 
 ## Getting Started
@@ -80,7 +80,7 @@ Look at the documentation for mozi-cli [here](https://github.com/mozi-ai/mozi-se
 2b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
 
 ```
-$ snet client call 0 0.00000001 46.4.115.181:5002 StartAnalysis query.json
+$ snet client call snet moses-service StartAnalysis query.json
 ...
 response: 
 INFO - resultUrl: "http://46.4.115.181:8080/?id=<session-id>"
