@@ -28,6 +28,9 @@ services:
 
       command: bash -c "circusd --log-level debug circus.ini"
 
+      volumes:
+        - /etc:/etc
+
   frontend:
       build:
           context: service-result/

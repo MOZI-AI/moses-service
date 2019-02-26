@@ -20,7 +20,7 @@
     "endpoints": [
         {
             "group_name": "default_group",
-            "endpoint": "46.4.115.181:5005"
+            "endpoint": "https://mozi.ai:5005"
         }
     ],
     "service_description": {

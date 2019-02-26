@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 3:
         try:
-            channel = grpc.insecure_channel(f"{GRPC_HOST}:{GRPC_PORT}")
+            channel = grpc.insecure_channel(f"{GRPC_HOST}")
             stub = MosesServiceStub(channel)
             result = run_analysis(stub, sys.argv[1], sys.argv[2])
             logger.info(result)
