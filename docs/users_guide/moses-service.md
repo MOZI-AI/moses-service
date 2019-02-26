@@ -20,6 +20,19 @@ For genomic data, variants are naturally represented with a "one" value when pre
 
 For numerically valued features such as transcript of protein levels, the median norm can be used where an observation is coded "one" if it is greater than the median value for the feature across all observations.
 
+#### Example dataset
+Here is a sample dataset to use with the moses-service. One of the columns in the dataset should be set as **target feature**. In this dataset,  it is the first column named as **‘case’.**
+
+| case | A1BG | A1CF | A2M | A2M-AS1 | A2ML1 | A4GALT | A4GNT | AA06 | AAAS |
+|------|------|------|-----|---------|-------|--------|-------|------|------|
+| 1    | 1    | 1    | 0   | 1       | 1     | 0      | 1     | 1    | 0    |
+| 1    | 1    | 1    | 0   | 0       | 0     | 1      | 1     | 0    | 0    |
+| 1    | 1    | 1    | 0   | 0       | 1     | 1      | 1     | 1    | 0    |
+| 0    | 1    | 1    | 0   | 1       | 1     | 1      | 1     | 0    | 1    |
+| 0    | 1    | 1    | 0   | 0       | 1     | 0      | 1     | 1    | 0    |
+| 0    | 1    | 1    | 1   | 0       | 0     | 1      | 0     | 1    | 0    |
+
+
 ## Getting Started
 
 
@@ -67,7 +80,7 @@ Look at the documentation for mozi-cli [here](https://github.com/mozi-ai/mozi-se
 2b. Assuming that you have an open channel (`id: 0`) to this service use the generated **query.json** file to call the service
 
 ```
-$ snet client call 0 0.00000001 46.4.115.181:5002 StartAnalysis query.json
+$ snet client call snet moses-service StartAnalysis query.json
 ...
 response: 
 INFO - resultUrl: "http://46.4.115.181:8080/?id=<session-id>"
