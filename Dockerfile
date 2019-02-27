@@ -26,13 +26,13 @@ RUN mkdir $HOME/datasets
 ENV CODE $HOME/mozi_snet_service
 RUN mkdir $CODE
 
+RUN wget -O grpc-proxy https://github.com/improbable-eng/grpc-web/releases/download/0.6.3/grpcwebproxy-0.6.3-linux-x86_64
+RUN chmod 755 grpc-proxy
+
 COPY requirements.txt $CODE/requirements.txt
 WORKDIR $CODE
 RUN pip install -r requirements.txt
 
 COPY . $CODE
 
-RUN wget -O grpc-proxy https://github.com/improbable-eng/grpc-web/releases/download/0.6.3/grpcwebproxy-0.6.3-linux-x86_64
-RUN chmod 755 grpc-proxy
 RUN chmod 755 build.sh && ./build.sh
-

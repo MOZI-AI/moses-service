@@ -25,6 +25,6 @@
     ],
     "service_description": {
         "url": "https://mozi-ai.github.io/moses-service/",
-        "description": "The service uses the OpenCog meta optimising semantic evolutionary search algorithm MOSES to generate a supervised binary classification model of genomic or other high dimensional binary feature data sets using boolean regression"
+        "description": "The service uses the OpenCog meta optimising semantic evolutionary search algorithm MOSES to generate a supervised binary classification model of genomic or other high dimensional binary feature data sets using evolutionary methods"
     }
 }
