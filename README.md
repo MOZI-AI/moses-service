@@ -6,10 +6,10 @@
 
  [![CircleCI](https://circleci.com/gh/Habush/moses-service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)    [![Coverage Status](https://coveralls.io/repos/github/Habush/mozi_snet_service/badge.svg?branch=master)](https://coveralls.io/github/Habush/mozi_snet_service?branch=master)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
 
-The [MOSES](https://github.com/opencog/moses) service for SingularityNET
+The MOSES service for SingularityNET
 
 
-The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for supervised classification of high dimensional data sets with many more features than samples, such as whole genome sequencing data or gene expression data.
+The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for supervised classification of high dimensional data sets with many more features than samples, such as whole genome sequencing data or gene expression data.  See the OpenCog [wiki page](https://wiki.opencog.org/w/Meta-Optimizing_Semantic_Evolutionary_Search) about MOSES or this [Quick Guide](https://github.com/opencog/moses/blob/master/doc/moses/QuickGuide.pdf) for more detailed information.
 
 
 #### Running the Service
@@ -18,9 +18,9 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 
     ``$ git clone --recursive https://github.com/Habush/moses-service.git``
     
-2. Go to the project folder and start docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
+2. Go to the project folder to start the docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
-    2a. Define the `APP_PORT`, `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<ADDR>` to the address of the host that you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
+    2a. Define the `APP_PORT` and `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<ADDR>` to the address of the host where you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
 
 
 
@@ -59,7 +59,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 moses_opts: "-j8 --balance 1 \
   -m 10000 -W1 \
   --output-cscore 1 --result-count 100 \
-feature selection parameters
+# feature selection parameters
   --enable-fs 1 --fs-algo simple --fs-target-size 4 \
   --fs-focus all --fs-seed init \
 # hill climbing parameters
