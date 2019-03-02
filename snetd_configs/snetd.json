@@ -1,8 +1,8 @@
 {
-  "daemon_end_point": "https://mozi.ai/moses-service",
-  "ethereum_json_rpc_endpoint": "https://kovan.infura.io",
+  "daemon_end_point": "0.0.0.0:5002",
+  "ethereum_json_rpc_endpoint": "https://mainnet.infura.io",
   "ipfs_end_point": "http://ipfs.singularitynet.io:80",
-  "registry_address_key": "0xe331bf20044a5b24c1a744abc90c1fd711d2c08d",
+  "registry_address_key": "0xb3180a92e210b45e3447976a412ac0df859febaf",
   "passthrough_enabled": true,
   "passthrough_endpoint": "http://localhost:5003",
   "organization_id": "snet",
@@ -11,13 +11,13 @@
   "ssl_key": "/etc/letsencrypt/live/mozi.ai/privkey.pem",
 
   "payment_channel_storage_server": {
-    "id": "storage-kovan",
+    "id": "storage-main",
     "host": "127.0.0.1",
     "client_port": 2379,
     "peer_port": 2380,
     "token": "unique-token",
-    "cluster": "storage-kovan=http://127.0.0.1:2380",
-    "data_dir": "etcd/storage-data-dir-kovan.etcd",
+    "cluster": "storage-main=http://127.0.0.1:2380",
+    "data_dir": "etcd/storage-data-dir-main.etcd",
     "enabled": true
   },
 
