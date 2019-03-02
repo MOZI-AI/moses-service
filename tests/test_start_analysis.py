@@ -28,7 +28,8 @@ class TestTaskRunner(unittest.TestCase):
 
     @patch("pymongo.MongoClient")
     @patch("task.task_runner.CrossValidation")
-    def test_start_analysis(self, cross_val, client):
+    @patch("task.task_runner.write_dataset")
+    def test_start_analysis(self, write_dataset, cross_val, client):
         mock_db = mongomock.MongoClient().db
         client().__getitem__.return_value = mock_db
         session = {
@@ -37,8 +38,8 @@ class TestTaskRunner(unittest.TestCase):
             "filter_opts": {"score": "precision", "value": 0.4}
         }
 
-        mock_db.sessions.insert_one(session)
         cross_val.return_value.run_folds.return_value = "Run folds"
+        write_dataset.return_value = ("", "")
 
         start_analysis.delay(**session)
 
@@ -48,7 +49,8 @@ class TestTaskRunner(unittest.TestCase):
 
     @patch("pymongo.MongoClient")
     @patch("task.task_runner.CrossValidation")
-    def test_start_analysis_error_path(self, cross_val, client):
+    @patch("task.task_runner.write_dataset")
+    def test_start_analysis_error_path(self, write_dataset, cross_val, client):
         mock_db = mongomock.MongoClient().db
         client().__getitem__.return_value = mock_db
         session = {
@@ -57,8 +59,8 @@ class TestTaskRunner(unittest.TestCase):
             "filter_opts": {"score": "precision", "value": 0.4}
         }
 
-        mock_db.sessions.insert_one(session)
         cross_val.side_effect = Exception("Mock exception")
+        write_dataset.return_value = ("", "")
 
         self.assertRaises(Exception, start_analysis.delay(**session))
 
