@@ -37,11 +37,13 @@ CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_UR
 
 DB_NAME = "mozi_snet"
 
-MOZI_URI = f"http://mozi.ai:8080"
-
-GRPC_HOST = "https://mozi.ai:5005"
+GRPC_HOST = "localhost"
 GRPC_PORT = "5003"
 
+try:
+    MOZI_URI = os.environ["MOZI_URI"]
+except KeyError:
+    MOZI_URI = "http://locahost:8080"
 
 def setup_logging(default_path='logging.yml', default_level=logging.INFO):
     """Setup logging configuration

@@ -23,7 +23,7 @@ def read_file(location):
 
 def run_analysis(stub, opts_file, file_path):
     with open(opts_file, "r") as fp:
-        opts = yaml.load(fp)
+        opts = yaml.load(fp, Loader=yaml.FullLoader)
 
     dataset = read_file(file_path)
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) == 3:
         try:
-            channel = grpc.insecure_channel(f"{GRPC_HOST}")
+            channel = grpc.insecure_channel(f"{GRPC_HOST}:{GRPC_PORT}")
             stub = MosesServiceStub(channel)
             result = run_analysis(stub, sys.argv[1], sys.argv[2])
             logger.info(result)
