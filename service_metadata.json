@@ -1,0 +1,30 @@
+{
+    "version": 1,
+    "display_name": "MOSES",
+    "encoding": "proto",
+    "service_type": "grpc",
+    "payment_expiration_threshold": 40320,
+    "model_ipfs_hash": "QmSyaTMPtFFA71QEGFtF6jWHz1qvyrsuJRfwJzH2fP4yNY",
+    "mpe_address": "0x9C9252Ec9fa844e2C7bD2E6F54BEc2901938479F",
+    "pricing": {
+        "price_model": "fixed_price",
+        "price_in_cogs": 1
+    },
+    "groups": [
+        {
+            "group_name": "default_group",
+            "group_id": "e4aP54TPG/3BLh/ZRCMVVxiV7j9X7V6p4nqr9MKc3Lk=",
+            "payment_address": "0xd1C9246f6A15A86bae293a3E72F28C57Da6e1dCD"
+        }
+    ],
+    "endpoints": [
+        {
+            "group_name": "default_group",
+            "endpoint": "https://mozi.ai:5002"
+        }
+    ],
+    "service_description": {
+        "url": "https://mozi-ai.github.io/moses-service/users_guide/moses-service.html",
+        "description": "The service uses the OpenCog meta optimising semantic evolutionary search algorithm MOSES to generate a supervised binary classification model of genomic or other high dimensional binary feature data sets using evolutionary methods."
+    }
+}

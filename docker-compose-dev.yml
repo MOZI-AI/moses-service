@@ -1,0 +1,54 @@
+version: "3"
+services:
+  moses_service:
+      build:
+          context: ./
+
+      container_name: moses-service-dev
+      links:
+        - mongo
+        - redis
+        - frontend
+      ports:
+          - "5003:5003"
+          - "5000:5000"
+          - "7001:7001"
+
+      environment:
+          - MONGODB_URI=mongodb://mongo:27017/
+          - DATASETS_DIR=/home/root/datasets
+          - REDIS_URI=redis://redis:6379/0
+          - USER=root
+          - EXPIRY_SPAN=14
+          - SCAN_INTERVAL=86400
+          - APP_PORT=${APP_PORT}
+          - SERVICE_ADDR=${SERVICE_ADDR}
+
+      working_dir: /home/root/mozi_snet_service
+
+      command: bash -c "circusd --log-level debug circus-dev.ini"
+
+  frontend:
+      build:
+          context: service-result/
+          args:
+            - SERVER_ADDR=$SERVICE_ADDR
+
+      container_name: result-ui
+      ports:
+          - $APP_PORT:80
+
+  form-ui:
+      build:
+        context: form_ui/
+        args:
+            - SERVER_ADDR=$SERVICE_ADDR
+      container_name: form-ui
+      ports:
+        - 7000:80
+
+  mongo:
+      image: mongo
+
+  redis:
+      image: redis
