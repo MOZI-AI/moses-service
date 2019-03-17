@@ -36,19 +36,12 @@ RUN unzip grpc-proxy.zip && mv dist/grpcwebproxy-v$GRPC_PROXY_V-linux-x86_64 ./ 
 RUN chmod 755 grpc-proxy
 
 #setup snet daemon
-snet_daemon_v=0.1.8
-
-# apt install tar
-if [ ! -d snet-daemon-v$snet_daemon_v ] ; then
-    mkdir snet-daemon-v$snet_daemon_v
-	echo "Downloading snet-daemon"
-	wget https://github.com/singnet/snet-daemon/releases/download/v$snet_daemon_v/snet-daemon-v$snet_daemon_v-linux-amd64.tar.gz
-	tar -xzf snet-daemon-v$snet_daemon_v-linux-amd64.tar.gz -C snet-daemon-v$snet_daemon_v --strip-components 1
-	ln snet-daemon-v$snet_daemon_v/snetd snetd
-	rm snet-daemon-v$snet_daemon_v-linux-amd64.tar.gz
-else
-	echo "SNET daemon exists"
-fi
+ENV SNET_DAEMON_V 0.1.8
+RUN mkdir snet-daemon-v$SNET_DAEMON_V
+RUN wget https://github.com/singnet/snet-daemon/releases/download/v$SNET_DAEMON_V/snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz
+RUN tar -xzf snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz -C snet-daemon-v$SNET_DAEMON_V --strip-components 1
+RUN ln snet-daemon-v$SNET_DAEMON_V/snetd snetd
+RUN rm snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz
 
 
 COPY requirements.txt $CODE/requirements.txt
