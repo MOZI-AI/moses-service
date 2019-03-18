@@ -82,6 +82,8 @@ class TestCrossValidation(unittest.TestCase):
 
         self.assertEqual(ensemble_df.shape, (3, 6))
 
+        self.assertEqual(model_1.test_score.accuracy, ensemble_df.iloc[0, 3])
+
     def tearDown(self):
         if os.path.exists(self.test_file): os.remove(self.test_file)
         if os.path.exists(self.train_file): os.remove(self.train_file)

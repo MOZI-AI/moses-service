@@ -202,7 +202,7 @@ class CrossValidation:
 
         if len(filtered_models) == 0:
             return None
-        ensemble_models = list(map(lambda k: EnsembleModel(k.model, None), filtered_models))
+        ensemble_models = list(map(lambda k: EnsembleModel(k.model, k.test_score), filtered_models))
         matrix = model_eval.run_eval(ensemble_models, self.session.dataset)
         majority_matrix = stats.mode(matrix, nan_policy="omit").mode
 
@@ -213,8 +213,7 @@ class CrossValidation:
         ensemble_models.append(ensemble_model)
         score_matrix.append(ensemble_score[0])
 
-        for model, score in zip(ensemble_models, score_matrix):
-            model.score = score
+        for model, _ in zip(ensemble_models, score_matrix):
             for k in data:
                 data[k].append(model[k])
 
