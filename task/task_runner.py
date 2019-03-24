@@ -90,7 +90,7 @@ def start_analysis(**kwargs):
 
     try:
         filter_type, value = kwargs["filter_opts"]["score"], kwargs["filter_opts"]["value"]
-        filter_cls = loader.get_filter(filter_type)
+        filter_cls = loader.get_score_filters(filter_type)
         moses_cross_val = CrossValidation(session, db, filter_cls, value, swd)
         logger.info("Started cross-validation run")
         moses_cross_val.run_folds()

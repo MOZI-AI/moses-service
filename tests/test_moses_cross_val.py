@@ -1,4 +1,4 @@
-from crossval.filters.loader import get_filter
+from crossval.filters.loader import get_score_filters
 from models.objmodel import MosesModel, Score
 
 __author__ = "Abdulrahman Semrie<xabush@singularitynet.io>"
@@ -39,7 +39,7 @@ class TestCrossValidation(unittest.TestCase):
                             [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1]]
 
     def test_run_folds(self):
-        filter_type = get_filter("accuracy")
+        filter_type = get_score_filters("accuracy")
         moses_cross_val = CrossValidation(self.session, None, filter_type, 0.7, TEST_DATA_DIR)
         mock = MagicMock()
         moses_cross_val.on_progress_update = mock
@@ -62,7 +62,7 @@ class TestCrossValidation(unittest.TestCase):
         train_df, test_df = train_test_split(df, test_size=0.3)
 
         test_df.to_csv(self.test_file, index=False)
-        filter_type = get_filter("accuracy")
+        filter_type = get_score_filters("accuracy")
         moses_cross_val = CrossValidation(self.session, None, filter_type, 0.4, TEST_DATA_DIR)
         moses_cross_val.test_file = self.test_file
 

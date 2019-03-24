@@ -45,6 +45,7 @@ try:
 except KeyError:
     MOZI_URI = "http://locahost:8080"
 
+
 def setup_logging(default_path='logging.yml', default_level=logging.INFO):
     """Setup logging configuration
     """

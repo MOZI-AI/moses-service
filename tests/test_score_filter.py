@@ -8,7 +8,7 @@ from models.objmodel import MosesModel, Score
 class TestScoreFilter(unittest.TestCase):
 
     def test_loader(self):
-        filter_cls = loader.get_filter("precision")
+        filter_cls = loader.get_score_filters("precision")
 
         self.assertTrue(isinstance(filter_cls, score_filters.PrecisionFilter))
 
@@ -27,7 +27,7 @@ class TestScoreFilter(unittest.TestCase):
         model_3.train_score = Score(0.4, 0.3, -1, 0.4, 0.2)
         models.append(model_3)
 
-        acc_filter = loader.get_filter("recall")
+        acc_filter = loader.get_score_filters("recall")
 
         result = acc_filter.cut_off(models, 0.6)
 
@@ -44,7 +44,7 @@ class TestScoreFilter(unittest.TestCase):
         model_2.train_score = Score(0.5, 0.3, -1, 0.4, 0.2)
         models.append(model_2)
 
-        null_filter = loader.get_filter("null")
+        null_filter = loader.get_score_filters("null")
 
         result = null_filter.cut_off(models, 0)
 
