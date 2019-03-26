@@ -1,7 +1,7 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
 from abc import ABCMeta, abstractmethod
-
+import math
 
 class BaseFilter(metaclass=ABCMeta):
     """
@@ -19,7 +19,7 @@ class BaseFilter(metaclass=ABCMeta):
         """
         result = []
         for model in models:
-            if any([x < 0 for x in model.scores()]):
+            if any([x < 0 or math.isnan(x) for x in model.scores()]):
                 continue
             result.append(model)
 

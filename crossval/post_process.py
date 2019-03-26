@@ -45,10 +45,10 @@ class PostProcess:
         self._folds_to_models()
 
         filtered_models = []
-
         filter_cls = loader.get_overfitness_filter(self.filter_type)
 
         if filter_cls is not None:
-            filtered_models = filter_cls.cut_off(self.models, self.filter_value)
+            filtered_models = filter_cls.filter_negatives(self.models)
+            filtered_models = filter_cls.cut_off(filtered_models, self.filter_value)
 
         return list(map(lambda m: m.__dict__(), filtered_models))
