@@ -36,7 +36,7 @@ services:
       build:
           context: service-result/
           args:
-            - SERVER_ADDR=$SERVICE_ADDR
+            - SERVER_ADDR=$FLASK_SERVER
 
       container_name: result-ui
       ports:

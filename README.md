@@ -20,18 +20,21 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     
 2. Go to the project folder to start the docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
-    2a. Define the `APP_PORT` and `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<ADDR>` to the address of the host where you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
+    2a. Define the `APP_PORT` and `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<SERVICE_ADDR>` to the address of the host where you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
 
 
 
         $ export APP_PORT=<PORT_NUM>
         $ export SERVICE_ADDR=<ADDR>
+        $ export FLASK_SERVER=http://<ADDR>:<FLASK_PORT> # e.g http://192.168.1.3:5000
 
     2b. Start the docker containers:
 
         $ docker-compose up
 
-3. Install the python dependencies for running the service client on your local system. Run:
+      N.B If you make any changes to the code make sure you rerun the containers with `--build` flask. That is, `docker-compose up --build`
+
+3. Open a new terminal and install the python dependencies for running the service client on your local system. Run:
 
     ``$ pip install grpcio grpcio-tools pyyaml``
 
@@ -41,7 +44,7 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
     
     Note: Make sure you have set **execute permission** for `build.sh`. If not, just run `chmod +x build.sh`
 
-5. On a new terminal, while still in the project directory, call the service client. 
+5. On the new terminal, while still in the project directory, call the service client.
     Replace **_<options file>_** with a _.yaml_ file containing the moses and cross-validation **_<dataset file>_** with the path to file you want to run analysis on
     Inputs:
   - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
