@@ -6,8 +6,10 @@
 # Mozi Moses Service
 
 
-This service uses the OpenCog meta optimising semantic evolutionary search algorithm [MOSES](https://github.com/opencog/moses)
-to generate a supervised binary classification model of genomic or other high dimensional binary feature data sets using boolean regression..
+This service uses the OpenCog Meta-Optimising Semantic Evolutionary Search Algorithm [MOSES](https://github.com/opencog/moses)
+to generate boolean classification models of genomic or other high dimensional binary feature data sets using a multi-population evolutionary search strategy with a normalization procedure to simplify the evolving models.
+
+The user passes the data file and a file with cross-validation parameters and MOSES configuration flags to the service and receives a URL for retreiving the analysis results.  The compressed results file contains the original input file, a csv file with the classifier models and their test set scores and ensemble model scores on the complete data set, and a csv file with feature counts from the models in the ensemble, and the MOSES log file.
 
 It is part of a set of SingularityNET demonstration bio AI agents adapted from [Mozi.AI](https://mozi.ai) suite of OpenCog based bioinformatics tools.
 
@@ -18,7 +20,7 @@ Data set with binary values, observations in rows, features in columns, observat
 
 For genomic data, variants are naturally represented with a "one" value when present in a sample.  For diploid samples a "dominant" model can be used with a "one" for heterozygous or homozygous for the variant, a "recessive" model with a "one" for homozygous variant only, or by using two features for each variant, one for each possiblility.
 
-For numerically valued features such as transcript of protein levels, the median norm can be used where an observation is coded "one" if it is greater than the median value for the feature across all observations.
+For numerically valued features such as gene transcript or protein levels, the median norm can be used where an observation is coded "one" if it is greater than the median value for the feature across all samples.
 
 #### Example dataset
 Here is a sample dataset to use with the moses-service. One of the columns in the dataset should be set as **target feature**. In this dataset,  it is the first column named as **‘case’.**
@@ -50,7 +52,7 @@ Clone this repository:
 ```
 $ git clone https://github.com/mozi-ai/moses-service.git
 
-$ cd mozi_snet_service
+$ cd mozi-service
 ```
 
 ### Calling the service:
