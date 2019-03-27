@@ -30,9 +30,9 @@ The purpose of this service is to use [MOSES](https://github.com/opencog/moses) 
 
     2b. Start the docker containers:
 
-        $ docker-compose up
+        $ docker-compose -f docker-compose-dev.yml up
 
-      N.B If you make any changes to the code make sure you rerun the containers with `--build` flask. That is, `docker-compose up --build`
+      N.B If you make any changes to the code make sure you rerun the containers with `--build` flask. That is, `docker-compose -f docker-compose-dev.yml up --build`
 
 3. Open a new terminal and install the python dependencies for running the service client on your local system. Run:
 

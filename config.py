@@ -35,7 +35,7 @@ CELERY_OPTS = {'CELERY_BROKER_URL': REDIS_URI, 'CELERY_RESULT_BACKEND': REDIS_UR
 
 DB_NAME = "mozi_snet"
 
-GRPC_HOST = "mozi.ai"
+GRPC_HOST = "localhost"
 GRPC_PORT = "5003"
 
 try:
