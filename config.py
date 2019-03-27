@@ -39,7 +39,7 @@ GRPC_HOST = "localhost"
 GRPC_PORT = "5003"
 
 try:
-    MOZI_URI = os.environ["MOZI_URI"]
+    MOZI_URI = f"{os.environ['MOZI_URI']}:{APP_PORT}"
 except KeyError:
     MOZI_URI = "http://locahost:8080"
 
