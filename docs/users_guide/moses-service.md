@@ -59,7 +59,7 @@ filter:
 ```
 - **moses_opts:** See [here](https://wiki.opencog.org/w/MOSES_man_page) for a complete description of MOSES options.
 - **cross_val_opts:** "Monte Carlo" cross-validation is used where **folds * random_seed = n** training folds are constructed from a balanced random partition of fraction 1 - **test_size** of the original data set.
-- **filter:** Possible scores are **precision**, **recall**, **accuracy**, **f1**, and **p-value** that model accuracy is greater than the null model returning **false** for all inputs.  All values are in range 0 to 1.  The default filter is p value < 0.05.
+- **filter:** Possible scores are **precision**, **recall**, **accuracy**, **f1**, and **p-value** for null hypothesis that model score is greater than the null model returning **false** for all inputs.  All values are in range 0 to 1.  The default filter is p value < 0.05.
 
 ### Output files
 **to be added**
