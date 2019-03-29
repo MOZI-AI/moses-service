@@ -6,17 +6,22 @@
 
  [![CircleCI](https://circleci.com/gh/Habush/moses-service.svg?style=svg)](https://circleci.com/gh/Habush/mozi_snet_service)    [![Coverage Status](https://coveralls.io/repos/github/Habush/mozi_snet_service/badge.svg?branch=master)](https://coveralls.io/github/Habush/mozi_snet_service?branch=master)      [![BCH compliance](https://bettercodehub.com/edge/badge/Habush/mozi_snet_service?branch=master)](https://bettercodehub.com/)
 
-The MOSES service for SingularityNET
+### The MOSES service for SingularityNET
 
 
-The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for supervised classification of high dimensional data sets with many more features than samples, such as whole genome sequencing data or gene expression data.  See the OpenCog [wiki page](https://wiki.opencog.org/w/Meta-Optimizing_Semantic_Evolutionary_Search) about MOSES or this [Quick Guide](https://github.com/opencog/moses/blob/master/doc/moses/QuickGuide.pdf) for more detailed information.
+The purpose of this service is to use [MOSES](https://github.com/opencog/moses) for supervised classification of high dimensional data sets with many more features than samples, such as whole genome sequencing data or gene expression data.  See the OpenCog [wiki page](https://wiki.opencog.org/w/Meta-Optimizing_Semantic_Evolutionary_Search) about MOSES or this [Quick Guide](https://github.com/opencog/moses/blob/master/doc/moses/QuickGuide.pdf) for more detailed information on MOSES.
 
+The user supplies a csv file of sample data with samples/observations as rows and binary valued features (`1` for "true" and `0` for "false") as columns with binary sample labels (`1` for "case" and `0` for "control") in the first column, along with a yaml file of MOSES program options, cross-validation parameters, and score thresholds for filtering the evolved boolean models.
 
-#### Running the Service
+The service provides a URL link for downloading the set of output files, including copies of the input files, the MOSES log file, tables of output models from each cross-validation fold with their out-of-training-sample scores, a table of the filtered models with their scores on the complete input dataset and the scores for their majority-vote ensemble, and a table of feature counts from the ensemble model.
+
+You can find a detailed description of using the service [here](https://mozi-ai.github.io/moses-service/users_guide/moses-service.html).
+
+#### Building and Running the Service
 
 1. Clone the project:
 
-    ``$ git clone --recursive https://github.com/Habush/moses-service.git``
+    ``$ git clone --recursive https://github.com/MOZI-AI/moses-service.git``
     
 2. Go to the project folder to start the docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
@@ -77,7 +82,4 @@ cross_val_opts:
 
 target_feature: "case"
 ```
-
-#### Calling the Service
-
-You can find details on how to call the service on the github page [here](https://mozi-ai.github.io/moses-service/users_guide/moses-service.html)
+see [here](https://wiki.opencog.org/w/MOSES_man_page) for a complete description of MOSES options.
