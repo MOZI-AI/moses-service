@@ -18,7 +18,6 @@ crossval_options = {"folds": 3, "testSize": 0.3, "randomSeed": 3}
 try:
     MONGODB_URI = os.environ["MONGODB_URI"]
     REDIS_URI = os.environ["REDIS_URI"]
-    DATASET_DIR = os.environ["DATASETS_DIR"]
     EXPIRY_SPAN = float(os.environ["EXPIRY_SPAN"])  # the expiration period for a session in days
     SCAN_INTERVAL = float(os.environ["SCAN_INTERVAL"])
     APP_PORT = os.environ["APP_PORT"]
@@ -26,7 +25,6 @@ try:
 except KeyError:
     MONGODB_URI = "http://localhost:27017"
     REDIS_URI = "redis://localhost:6379/0"
-    DATASET_DIR = "/home/root"
     EXPIRY_SPAN = 14
     SCAN_INTERVAL = 3600 * 24  # every 24hrs
     APP_PORT = 80
@@ -43,10 +41,14 @@ try:
 except KeyError:
     MOZI_URI = "http://locahost:8080"
 
+DATASET_DIR = "/opt/moses-service/data"
 
 def setup_logging(default_path='logging.yml', default_level=logging.INFO):
     """Setup logging configuration
     """
+    LOG_DIR = "/opt/moses-service/log"
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
     if os.path.exists(default_path):
         with open(default_path, 'rt') as f:
             config = yaml.safe_load(f.read())

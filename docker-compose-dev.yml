@@ -27,6 +27,8 @@ services:
 
       working_dir: /home/root/mozi_snet_service
 
+      volumes:
+        - $HOME/.mozi/dev:/opt
       command: bash -c "circusd --log-level debug circus-dev.ini"
 
   frontend:

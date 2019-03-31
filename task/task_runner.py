@@ -27,6 +27,8 @@ def write_dataset(b_string, mnemonic):
     :param mnemonic: the mnemonic of the associated session
     :return: cwd: the directory where the dataset file is saved
     """
+    if not os.path.exists(DATASET_DIR):
+        os.makedirs(DATASET_DIR)
     swd = os.path.join(DATASET_DIR, f"session_{mnemonic}")
 
     if not os.path.exists(swd):
