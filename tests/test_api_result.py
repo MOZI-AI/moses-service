@@ -46,10 +46,11 @@ class TestApi(unittest.TestCase):
 
         self.assertEqual(resonse.status_code, 404)
 
+    @patch("zipfile.ZipFile")
     @patch("webserver.apimain.send_file")
     @patch("webserver.apimain.zip_dir")
     @patch("pymongo.MongoClient")
-    def test_result_api(self, client, make_archive, send_file):
+    def test_result_api(self, client, make_archive, send_file, zip_file):
         temp_session = Session("abcd", "", "", "", "5abcd")
         temp_session.status = 2
         mock_db = mongomock.MongoClient().db
