@@ -181,9 +181,8 @@ class CrossValidation:
         """
 
         for moses_model in models:
-            if moses_model.test_score.p_value < 0.05:  # include only significant models in the feature count
-                tree = combo_parser.parse(moses_model.model)
-                self.tree_transformer.transform(tree)
+            tree = combo_parser.parse(moses_model.model)
+            self.tree_transformer.transform(tree)
 
     def majority_vote(self):
         """
@@ -199,6 +198,7 @@ class CrossValidation:
         for _, v in self.result_models.items():
             res = self.filter.cut_off(v, self.filter_value)
             if len(res) > 0:
+                self.count_features(res)
                 filtered_models.extend(res)
 
         if len(filtered_models) == 0:
