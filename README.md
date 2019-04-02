@@ -25,13 +25,16 @@ You can find a detailed description of using the service [here](https://mozi-ai.
     
 2. Go to the project folder to start the docker containers to run the gRPC server and its dependencies (redis, mongo, etc)
 
-    2a. Define the `APP_PORT` and `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<SERVICE_ADDR>` to the address of the host where you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`
+    2a. Define the `APP_PORT` and `SERVICE_ADDR` variables. Change `<PORT_NUM>` to the port number you would like to run the result_ui app and `<SERVICE_ADDR>` to the address of the host where you are going to run the app. If you are running this locally, set SERVICE_ADDR to `localhost`.
+
 
 
 
         $ export APP_PORT=<PORT_NUM>
         $ export SERVICE_ADDR=<ADDR>
         $ export FLASK_SERVER=http://<ADDR>:<FLASK_PORT> # e.g http://192.168.1.3:5000
+
+    You can also set these values in the `docker-compose.yml/docker-compose-dev.yml` file in the environments section
 
     2b. Start the docker containers:
 
@@ -53,7 +56,7 @@ You can find a detailed description of using the service [here](https://mozi-ai.
     Replace **_<options file>_** with a _.yaml_ file containing the moses and cross-validation **_<dataset file>_** with the path to file you want to run analysis on
     Inputs:
   - `options`: yaml file with MOSES algorithm and cross-validation  parameters.  See [below](#options) for examples.
-  - `data`: csv file with observations or samples in rows and binary features in columns labeled **1** for **TRUE** and **0** for **FALSE** for each sample.  The first column should indicate the category label of the sample (**1** for **case** and **0** for **control**).  
+  - `data`: csv file with observations or samples in rows and binary features in columns labeled **1** for **TRUE** and **0** for **FALSE** for each sample.  The first column should indicate the category label of the sample (**1** for **case** and **0** for **control**).
  See the doc [here](https://mozi-ai.github.io/moses-service/users_guide/moses-service.html) for a discussion of prepairing specific experimental data types.
     
     ``$ python -m service.moses_service_client <options-file> <dataset-file>``

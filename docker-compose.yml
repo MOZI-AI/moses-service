@@ -23,7 +23,7 @@ services:
           - SCAN_INTERVAL=86400
           - APP_PORT=$APP_PORT
           - SERVICE_ADDR=$SERVICE_ADDR
-          - MOZI_URI=mozi.ai:8080
+          - MOZI_URI=mozi.ai
 
       working_dir: /home/root/mozi_snet_service
 
