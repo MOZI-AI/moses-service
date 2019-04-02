@@ -38,13 +38,14 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
                                  target_feature=target_feature)
 
             url = f"{MOZI_URI}/?id={mnemonic}"
+            logger.info(f"Session {session_id} analysis started.")
             return Result(resultUrl=url, description="Analysis started")
 
         else:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f"Invalid dataset.Dataset doesn't contain a column with named {target_feature} or has "
                                 f"invalid characters")
-
+            logger.error("Error occurred while validating request")
             return Result(resultUrl="", description=f"Validation error occurred. Dataset doesn't contain a column with named {target_feature} or has invalid characters")
 
 
