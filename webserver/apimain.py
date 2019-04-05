@@ -48,6 +48,24 @@ def check_status(mnemonic):
         return jsonify({"response": "Session not found"}), 404
 
 
+@app.route("/session/<mnemonic>", methods=["GET"])
+def get_session_info(mnemonic):
+    db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
+
+    session = Session.get_session(db, mnemonic=mnemonic)
+
+    if session:
+        return jsonify({
+            "moses_opts": session.moses_options,
+            "cross_val_opts": session.crossval_options,
+            "target_feature": session.target_feature
+        })
+    else:
+        return jsonify({
+            "message": "Session not found"
+        }), 404
+
+
 @app.route("/result/<mnemonic>", methods=["GET"])
 def send_result(mnemonic):
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
