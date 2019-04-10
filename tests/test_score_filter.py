@@ -8,9 +8,9 @@ from models.objmodel import MosesModel, Score
 class TestScoreFilter(unittest.TestCase):
 
     def test_loader(self):
-        filter_cls = loader.get_score_filters("precision")
+        filter_cls = loader.get_score_filters("P-value")
 
-        self.assertTrue(isinstance(filter_cls, score_filters.PrecisionFilter))
+        self.assertIsNotNone(filter_cls)
 
     def test_filter_accuracy(self):
         models = []

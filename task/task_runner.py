@@ -67,7 +67,7 @@ def setup_periodic_task(sender, **kwargs):
     sender.add_periodic_task(SCAN_INTERVAL, scan_expired_sessions.s(EXPIRY_SPAN), name="Scan for expired sessions")
 
 
-@celery.task(name="task.task_runner.start_analysis")
+@celery.task(name="task.task_runner.start_analysis", serializer="json")
 def start_analysis(**kwargs):
     """
     A celery task that runs the MOSES analysis
