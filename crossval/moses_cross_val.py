@@ -1,18 +1,18 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-from models.objmodel import EnsembleModel
 import os
-from crossval.moses_runner import MosesRunner
-from sklearn.model_selection import StratifiedShuffleSplit
-import pandas as pd
 import random
-import logging
-from crossval.model_evaluator import ModelEvaluator
-import math
-from utils.feature_count import combo_parser, ComboTreeTransform
-from scipy import stats
 import tempfile
 
+import pandas as pd
+from scipy import stats
+from sklearn.model_selection import StratifiedShuffleSplit
+
+from crossval.model_evaluator import ModelEvaluator
+from crossval.moses_runner import MosesRunner
+from models.objmodel import EnsembleModel
+from utils.feature_count import combo_parser, ComboTreeTransform
+from config import get_logger
 
 class CrossValidation:
     """
@@ -30,7 +30,7 @@ class CrossValidation:
         self.db = db
         self.filter = filter_type
         self.filter_value = value
-        self.logger = logging.getLogger("mozi_snet")
+        self.logger = get_logger(session.mnemonic)
         self.fold_files = []
         self._set_dir()
 
@@ -67,7 +67,7 @@ class CrossValidation:
 
             fold_fname = f"fold_{i}.csv"
             self.fold_files.append(fold_fname)
-            self.logger.info(f"Got {len(fold_models)} for fold_{i}")
+            self.logger.info(f"Got {len(fold_models)} models for fold_{i}")
             # CrossValidation.merge_fold_files(fold_fname, files)
             self.logger.info("Evaluating fold: %d" % i)
             scored_models = self.score_fold(fold_models, train_file, test_file)
@@ -111,7 +111,7 @@ class CrossValidation:
             output_file = tempfile.NamedTemporaryFile(mode="w+")
             moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
-            moses_runner = MosesRunner(file, output_file.name, moses_options)
+            moses_runner = MosesRunner(file, output_file.name, moses_options, self.session.mnemonic)
             returncode, stdout, stderr = moses_runner.run_moses()
 
             if returncode != 0:
@@ -142,7 +142,7 @@ class CrossValidation:
         :param test_file: The file containing the test set
         :return:
         """
-        model_evaluator = ModelEvaluator(self.session.target_feature)
+        model_evaluator = ModelEvaluator(self.session.target_feature, self.session.mnemonic)
 
         test_matrix = model_evaluator.run_eval(models, test_file)
         train_matrix = model_evaluator.run_eval(models, train_file)
@@ -196,7 +196,7 @@ class CrossValidation:
         their individual scores and the combined score
         """
         data = {"model": [], "recall": [], "precision": [], "accuracy": [], "f1_score": [], "p_value": []}
-        model_eval = ModelEvaluator(self.session.target_feature)
+        model_eval = ModelEvaluator(self.session.target_feature, self.session.id)
         filtered_models = []
         for _, v in self.result_models.items():
             res = self.filter.cut_off(v, self.filter_value)

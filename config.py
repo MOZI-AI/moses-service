@@ -43,6 +43,7 @@ except KeyError:
 
 DATASET_DIR = "/opt/moses-service/data"
 
+
 def setup_logging(default_path='logging.yml', default_level=logging.INFO):
     """Setup logging configuration
     """
@@ -55,3 +56,15 @@ def setup_logging(default_path='logging.yml', default_level=logging.INFO):
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+
+
+def get_logger(session_id=None):
+    if session_id is None:
+        return logging.getLogger("mozi_snet")
+
+    extra = {"session": session_id}
+
+    logger = logging.getLogger("mozi_snet")
+    logger = logging.LoggerAdapter(logger, extra)
+
+    return logger

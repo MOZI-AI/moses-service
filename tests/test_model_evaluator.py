@@ -20,14 +20,14 @@ class TestModelEvaluator(unittest.TestCase):
         self.input_file = os.path.join(TEST_DATA_DIR, "bin_truncated.csv")
 
     def test_run_eval_happy_path(self):
-        model_eval = ModelEvaluator("case")
+        model_eval = ModelEvaluator("case", "abcdre")
 
         matrix = model_eval.run_eval(self.test_combo, self.input_file)
 
         self.assertEqual(matrix.shape[0], 3)
 
     def test_score_models(self):
-        model_eval = ModelEvaluator("case")
+        model_eval = ModelEvaluator("case", "abcdre")
         matrix = model_eval.run_eval(self.test_combo, self.input_file)
 
         scored_matrix = model_eval.score_models(matrix, self.input_file)

@@ -1,11 +1,10 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-from models.objmodel import MosesModel
-import subprocess
 import logging
 import re
-import tempfile
-import fileinput
+import subprocess
+from config import get_logger
+from models.objmodel import MosesModel
 
 
 class MosesRunner:
@@ -13,7 +12,7 @@ class MosesRunner:
     A class that handles running of the MOSES binary program
     """
 
-    def __init__(self, input_file, output_file, moses_opts):
+    def __init__(self, input_file, output_file, moses_opts, session_id):
         """
         :param input_file: The input file to run MOSES on
         :param output_file: The file to write MOSES program outputs to
@@ -24,7 +23,7 @@ class MosesRunner:
         self.moses_options = moses_opts
         if not "W1" in moses_opts: moses_opts += ' -W1'
         self.output_regex = re.compile(r"(-?\d+) (.+) \[(.+)\]")
-        self.logger = logging.getLogger("mozi_snet")
+        self.logger = get_logger(session_id)
 
     def run_moses(self):
         """
@@ -65,5 +64,4 @@ class MosesRunner:
                     complexity = match.group(3).split(",")[2].split("=")[1]
                     models.append(MosesModel(model, complexity))
 
-        self.logger.info(f"Num of combo models {len(models)}")
         return models

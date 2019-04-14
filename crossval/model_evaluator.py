@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import subprocess
 import logging
-import os
 from mlxtend.evaluate import scoring, mcnemar, mcnemar_table
 import tempfile
+from config import get_logger
 
 
 class ModelEvaluator:
@@ -16,9 +16,9 @@ class ModelEvaluator:
     This is class evaluates programs that are output by MOSES and scores them against test and training data
     """
 
-    def __init__(self, target_feature):
+    def __init__(self, target_feature, session_id):
         self.target_feature = target_feature
-        self.logger = logging.getLogger("mozi_snet")
+        self.logger = get_logger(session_id)
 
     def run_eval(self, models, input_file):
         """

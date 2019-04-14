@@ -14,6 +14,7 @@ from config import MONGODB_URI, CELERY_OPTS, DB_NAME, DATASET_DIR, EXPIRY_SPAN, 
 from crossval.moses_cross_val import CrossValidation
 from models.dbmodels import Session
 from crossval.filters import loader
+from config import get_logger
 
 celery = Celery('mozi_snet', broker=CELERY_OPTS["CELERY_BROKER_URL"])
 celery.conf.update(CELERY_OPTS)
@@ -77,12 +78,11 @@ def start_analysis(**kwargs):
     :return:
     """
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
-    logger = logging.getLogger("mozi_snet")
 
     swd, file_path = write_dataset(kwargs["dataset"], kwargs["mnemonic"])
     session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
                       file_path, kwargs["mnemonic"], kwargs["target_feature"])
-
+    logger = get_logger(session.mnemonic)
     session.save(db)
 
     session.status = 1

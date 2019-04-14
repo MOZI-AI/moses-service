@@ -26,20 +26,20 @@ class TestMosesRun(unittest.TestCase):
             os.remove(opencog_log)
 
     def test_run_moses_happy_path(self):
-        moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts)
+        moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts, "abcdre")
 
         self.assertEqual(moses_runner.run_moses()[0], 0)  # successfully ran moses
 
     def test_run_moses_error_path(self):
         tweaked_options = self.moses_opts + "-xyz"  # this is done to make moses deliberately fail
-        moses_runner = MosesRunner(self.input_file, self.output_file, tweaked_options)
+        moses_runner = MosesRunner(self.input_file, self.output_file, tweaked_options, "abcdre")
 
         self.assertNotEqual(moses_runner.run_moses()[0], 0)
 
         self.assertNotEqual("", moses_runner.run_moses()[2])  # make sure there is an error output
 
     def test_format_combo(self):
-        moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts)
+        moses_runner = MosesRunner(self.input_file, self.output_file, self.moses_opts, "abcdre")
         moses_runner.run_moses()
         test_combo_file = os.path.join(TEST_DATA_DIR, self.output_file)
 

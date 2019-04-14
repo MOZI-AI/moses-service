@@ -19,7 +19,7 @@ class TestTaskRunner(unittest.TestCase):
         with open(dataset, "rb") as fp:
             content = fp.read()
 
-        cls.dataset = base64.b64encode(content)
+        cls.dataset = base64.b64encode(content).decode("utf-8")
         cls.session_id = str(uuid.uuid4())
         cls.cwd = os.path.join(TEST_DATA_DIR, f"session_{cls.session_id}")
 
