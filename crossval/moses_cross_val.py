@@ -81,7 +81,10 @@ class CrossValidation:
             ensemble_df.to_csv("ensemble.csv", index=False)
         feature_count_df = pd.DataFrame.from_dict(self.tree_transformer.fcount)
 
-        feature_count_df.to_csv("feature_count.csv")
+        feature_count_df = feature_count_df.T
+        feature_count_df.reset_index(level=0, inplace=True)
+        feature_count_df = feature_count_df.rename(columns={"index": "feature"})
+        feature_count_df.to_csv("feature_count.csv", index=False)
 
     def split_dataset(self):
         """
