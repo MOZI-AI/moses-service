@@ -11,7 +11,7 @@ from models.objmodel import Score, MosesModel
 
 class PostProcess:
 
-    def __init__(self, filter_type, filter_value, mnemonic):
+    def __init__(self, filter_type, filter_value, mnemonic, overfitness=1):
         self.filter_type = filter_type
         self.filter_value = filter_value
         self.mnemonic = mnemonic
@@ -20,6 +20,7 @@ class PostProcess:
 
         self.session = None
         self.models = []
+        self.overfitness = overfitness
 
     def _retrieve_folds(self, base_dir):
         swd = os.path.join(base_dir,  f"session_{self.mnemonic}")
@@ -45,7 +46,10 @@ class PostProcess:
         self._folds_to_models()
 
         filtered_models = []
-        filter_cls = loader.get_overfitness_filter(self.filter_type)
+        if self.overfitness == 1:
+            filter_cls = loader.get_overfitness_filter(self.filter_type)
+        else:
+            filter_cls = loader.get_score_filters(self.filter_type)
 
         if filter_cls is not None:
             filtered_models = filter_cls.filter_negatives(self.models)

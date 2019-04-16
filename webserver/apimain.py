@@ -92,6 +92,7 @@ def send_result(mnemonic):
 def filter_models(mnemonic):
     filter_type = request.args.get("filter")
     filter_value = request.args.get("value")
+    overfitness = int(request.args.get("overfitness"))
 
     if filter_type is None or filter_value is None:
         return jsonify({"message":"Filter type and value required"}), 400
@@ -111,7 +112,7 @@ def filter_models(mnemonic):
     if client.exists(mnemonic) > 0:
         client.delete(mnemonic)
 
-    post_process_filter = PostProcess(filter_type, value, mnemonic)
+    post_process_filter = PostProcess(filter_type, value, mnemonic, overfitness)
     try:
         models = post_process_filter.filter_models()
     except AssertionError:

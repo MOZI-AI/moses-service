@@ -41,7 +41,7 @@ class TestPostProcess(unittest.TestCase):
     @patch("pymongo.MongoClient")
     def test_filter_models(self, client):
         mock_db = mongomock.MongoClient().db
-        post_process = PostProcess("accuracy", 0.2, self.mnemonic)
+        post_process = PostProcess("accuracy", 0.8, self.mnemonic, 0)
         post_process.db = mock_db
 
         result_models = post_process.filter_models(TEST_DATA_DIR)
