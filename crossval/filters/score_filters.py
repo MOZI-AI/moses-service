@@ -36,7 +36,7 @@ class PValueFilter(BaseFilter):
     def cut_off(self, models, value):
         models = super().filter_negatives(models)
 
-        return list(filter(lambda k: k.test_score.p_value >= value, models))
+        return list(filter(lambda k: k.test_score.p_value <= value, models))
 
 
 class NullFilter(BaseFilter):
