@@ -4,7 +4,6 @@ coverage
 coveralls
 flask
 flask-cors
-grpcio
 grpcio-tools
 gunicorn
 lark-parser==0.5.5

@@ -59,8 +59,9 @@ def setup_logging(default_path='logging.yml', default_level=logging.INFO):
 
 
 def get_logger(session_id=None):
+    extra = {"session": session_id}
     if session_id is None:
-        return logging.getLogger("mozi_snet")
+        extra["session"] = ""
 
     extra = {"session": session_id}
 

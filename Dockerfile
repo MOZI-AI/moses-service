@@ -36,13 +36,15 @@ RUN unzip grpc-proxy.zip && mv dist/grpcwebproxy-v$GRPC_PROXY_V-linux-x86_64 ./ 
 RUN chmod 755 grpc-proxy
 
 #setup snet daemon
-ENV SNET_DAEMON_V 0.1.8
+ENV SNET_DAEMON_V 1.1.2
 RUN mkdir snet-daemon-v$SNET_DAEMON_V
 RUN wget https://github.com/singnet/snet-daemon/releases/download/v$SNET_DAEMON_V/snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz
 RUN tar -xzf snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz -C snet-daemon-v$SNET_DAEMON_V --strip-components 1
 RUN ln snet-daemon-v$SNET_DAEMON_V/snetd snetd
 RUN rm snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz
 
+RUN pip install --upgrade pip && \
+       pip install grpcio --no-binary grpcio
 
 COPY requirements.txt $CODE/requirements.txt
 RUN pip install -r requirements.txt
