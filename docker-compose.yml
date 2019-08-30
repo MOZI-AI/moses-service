@@ -1,6 +1,6 @@
 version: "3"
 services:
-  moses_service:
+  moses-service:
       build: ./
       container_name: moses-service
       links:
@@ -31,6 +31,7 @@ services:
 
       volumes:
         - /etc:/etc
+        - /ssl:/ssl
         - $HOME/.mozi/prod:/opt
 
   frontend:

@@ -36,7 +36,7 @@ RUN unzip grpc-proxy.zip && mv dist/grpcwebproxy-v$GRPC_PROXY_V-linux-x86_64 ./ 
 RUN chmod 755 grpc-proxy
 
 #setup snet daemon
-ENV SNET_DAEMON_V 1.1.2
+ENV SNET_DAEMON_V 2.0.2
 RUN mkdir snet-daemon-v$SNET_DAEMON_V
 RUN wget https://github.com/singnet/snet-daemon/releases/download/v$SNET_DAEMON_V/snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz
 RUN tar -xzf snet-daemon-v$SNET_DAEMON_V-linux-amd64.tar.gz -C snet-daemon-v$SNET_DAEMON_V --strip-components 1
@@ -48,7 +48,8 @@ RUN pip install --upgrade pip && \
 
 COPY requirements.txt $CODE/requirements.txt
 RUN pip install -r requirements.txt
-
+#RUN pip install dask distributed --upgrade && \
+#    pip install dask[dataframe]
 COPY . $CODE
 
 RUN chmod 755 build.sh && ./build.sh

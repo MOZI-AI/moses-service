@@ -1,32 +1,19 @@
 {
   "daemon_end_point": "0.0.0.0:5002",
-  "ethereum_json_rpc_endpoint": "https://mainnet.infura.io",
   "ipfs_end_point": "http://ipfs.singularitynet.io:80",
-  "registry_address_key": "0xb3180a92e210b45e3447976a412ac0df859febaf",
   "passthrough_enabled": true,
   "passthrough_endpoint": "http://localhost:5003",
   "organization_id": "snet",
   "service_id": "moses-service",
   "ssl_cert": "/etc/letsencrypt/live/mozi.ai/fullchain.pem",
   "ssl_key": "/etc/letsencrypt/live/mozi.ai/privkey.pem",
-
-  "payment_channel_storage_server": {
-    "id": "storage-main",
-    "host": "127.0.0.1",
-    "client_port": 2379,
-    "peer_port": 2380,
-    "token": "unique-token",
-    "cluster": "storage-main=http://127.0.0.1:2380",
-    "data_dir": "etcd/storage-data-dir-main.etcd",
-    "enabled": true
-  },
-
-  "payment_channel_storage_client": {
-    "connection_timeout": "5s",
-    "request_timeout": "3s",
-    "endpoints": ["http://127.0.0.1:2379"]
-  },
-
+  "payent_channel_cert_path": "/ssl/client.pem",
+  "payent_channel_ca_path": "/ssl/ca.pem",
+  "payent_channel_key_path": "/ssl/client-key.pem",
+  "free_call_signer_address": "0x3Bb9b2499c283cec176e7C707Ecb495B7a961ebf",
+  "blockchain_network_selected": "main",
+  "metering_end_point": "https://mainnet-marketplace.singularitynet.io/metering",
+  "pvt_key_for_metering": "68f7e4d9d2d622ae4cfcb800de1f068744784219d7878d0a7b29b9dacd79e729",
   "log": {
     "level": "info",
     "output": {
