@@ -18,7 +18,7 @@ def read_file(location):
 
 def run_analysis(stub, opts_file, file_path):
     with open(opts_file, "r") as fp:
-        opts = yaml.load(fp, Loader=yaml.FullLoader)
+        opts = yaml.load(fp)
 
     dataset = read_file(file_path)
 
