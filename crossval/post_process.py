@@ -1,10 +1,11 @@
 __author__ = 'Abdulrahman Semrie<hsamireh@gmail.com>'
 
-import pymongo
-from config import MONGODB_URI, DB_NAME, DATASET_DIR
 import os
 import pathlib
+
 import pandas as pd
+
+from config import DATASET_DIR
 from crossval.filters import loader
 from models.objmodel import Score, MosesModel
 

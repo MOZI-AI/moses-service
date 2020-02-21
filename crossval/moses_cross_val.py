@@ -6,7 +6,7 @@ import tempfile
 
 import pandas as pd
 from scipy import stats
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedShuffleSplit, ShuffleSplit
 
 from crossval.model_evaluator import ModelEvaluator
 from crossval.moses_runner import MosesRunner
@@ -95,7 +95,7 @@ class CrossValidation:
 
         x, y = df.values, df[self.session.target_feature].values
         splits, test_size = self.session.crossval_options["folds"], self.session.crossval_options["testSize"]
-        cv = StratifiedShuffleSplit(n_splits=splits, test_size=test_size)
+        cv = ShuffleSplit(n_splits=splits, test_size=test_size, random_state=42)
 
         return x, df.columns.values, cv.split(x, y)
 
@@ -111,7 +111,7 @@ class CrossValidation:
             output_file = tempfile.NamedTemporaryFile(mode="w+")
             moses_options = " ".join([self.session.moses_options, "--random-seed " + str(seed)])
 
-            moses_runner = MosesRunner(file, output_file.name, moses_options, self.session.mnemonic)
+            moses_runner = MosesRunner(file, output_file.name, moses_options, self.session.mnemonic, self.session.target_feature)
             returncode, stdout, stderr = moses_runner.run_moses()
 
             if returncode != 0:

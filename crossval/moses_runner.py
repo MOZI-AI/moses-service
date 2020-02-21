@@ -12,7 +12,7 @@ class MosesRunner:
     A class that handles running of the MOSES binary program
     """
 
-    def __init__(self, input_file, output_file, moses_opts, session_id):
+    def __init__(self, input_file, output_file, moses_opts, session_id, target_feature="case"):
         """
         :param input_file: The input file to run MOSES on
         :param output_file: The file to write MOSES program outputs to
@@ -24,6 +24,7 @@ class MosesRunner:
         if not "W1" in moses_opts: moses_opts += ' -W1'
         self.output_regex = re.compile(r"(-?\d+) (.+) \[(.+)\]")
         self.logger = get_logger(session_id)
+        self.target_feature = target_feature
 
     def run_moses(self):
         """
@@ -34,7 +35,7 @@ class MosesRunner:
         :returns stdin: the error output of the process, if any
         """
 
-        cmd = ["moses", "-i", self.input, "-o", self.output]
+        cmd = ["moses", "-i", self.input, "-o", self.output, "--target-feature", self.target_feature]
 
         for opt in self.moses_options.split():
             cmd.append(opt)
