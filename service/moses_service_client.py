@@ -20,15 +20,13 @@ def run_analysis(stub, opts_file, file_path):
     with open(opts_file, "r") as fp:
         opts = yaml.load(fp)
 
-    dataset = read_file(file_path)
-
     cross_val = CrossValOptions(folds=opts["cross_val_opts"]["folds"], testSize=opts["cross_val_opts"]["test_size"],
                                 randomSeed=opts["cross_val_opts"]["random_seed"])
 
     filter_val = Filter(score=opts["filter"]["score"], value=opts["filter"]["value"])
     payload = AnalysisParameters(mosesOpts=opts["moses_opts"], crossValOpts=cross_val,
                                  targetFeature=opts["target_feature"], filter=filter_val,
-                                 dataset=dataset)
+                                 dataset=file_path)
 
     return stub.StartAnalysis(payload)
 

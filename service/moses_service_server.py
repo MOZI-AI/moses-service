@@ -1,24 +1,21 @@
 __author__ = 'Abdulrahman Semrie<xabush@singularitynet.io>'
 
-import logging
+import contextlib
+import multiprocessing
+import socket
 import time
 import uuid
 from concurrent import futures
+
 import grpc
-from config import MOZI_URI, GRPC_PORT, setup_logging, DATASET_DIR
+import pandas as pd
+
+from config import MOZI_URI, GRPC_PORT, setup_logging
+from config import get_logger
 from service_specs import moses_service_pb2_grpc
 from service_specs.moses_service_pb2 import Result
 from task.task_runner import start_analysis
 from utils.url_encoder import encode
-import sys
-import os
-import base64
-import pandas as pd
-import tempfile
-from config import get_logger
-import multiprocessing
-import socket
-import contextlib
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 _PROCESS_COUNT = multiprocessing.cpu_count()
@@ -56,22 +53,14 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
                           description=f"Validation error occurred. Dataset doesn't contain a column with named {target_feature} or has invalid characters")
 
 
-def is_valid_dataset(b_string, target_feature):
+def is_valid_dataset(dataset, target_feature):
     """
     Checks if a dataset is a valid or not
     :param b_string: The base64 encoded string of the dataset file
     :param target_feature: The target feature column name
     :return:
     """
-
-    fd, file_path = tempfile.mkstemp()
-
-    fb = base64.b64decode(b_string)
-
-    with open(fd, "wb") as fp:
-        fp.write(fb)
-
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(dataset)
 
     # check if the target_feature exists
     if not {target_feature}.issubset(df.columns):
@@ -80,7 +69,6 @@ def is_valid_dataset(b_string, target_feature):
     invalid_df = df.filter(regex="[$!()]+", axis="columns")
 
     valid = len(invalid_df.columns) == 0
-    os.remove(file_path)
     return valid
 
 

@@ -21,7 +21,7 @@ celery.conf.update(CELERY_OPTS)
 setup_logging()
 
 
-def write_dataset(b_string, mnemonic):
+def write_dataset(mnemonic):
     """
     Writes the dataset file and returns the directory it is saved in
     :param b_string: the base64 encoded string of the dataset file
@@ -34,15 +34,7 @@ def write_dataset(b_string, mnemonic):
 
     if not os.path.exists(swd):
         os.makedirs(swd)
-
-    file_path = os.path.join(swd, f"dataset.csv")
-
-    fb = base64.b64decode(b_string)
-
-    with open(file_path, "wb") as fp:
-        fp.write(fb)
-
-    return swd, file_path
+    return swd
 
 
 def get_expired_sessions(db, time_span):
@@ -79,7 +71,7 @@ def start_analysis(**kwargs):
     """
     db = pymongo.MongoClient(MONGODB_URI)[DB_NAME]
 
-    swd, file_path = write_dataset(kwargs["dataset"], kwargs["mnemonic"])
+    swd, file_path = write_dataset(kwargs["mnemonic"]), kwargs["dataset"]
     session = Session(kwargs["id"], kwargs["moses_options"], kwargs["crossval_options"],
                       file_path, kwargs["mnemonic"], kwargs["target_feature"])
     logger = get_logger(session.mnemonic)
