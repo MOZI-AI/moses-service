@@ -1,10 +1,31 @@
-FROM xabush/opencog-deps:latest
+FROM ubuntu:18.04
 MAINTAINER Abdulrahman Semrie <xabush@singularitynet.io>
 
 #Run apt-get in NONINTERACTIVE mode
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN sudo apt-get update &&  sudo apt-get install -y  git wget curl vim man build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev libzmq-dev libevent-dev python-dev
+RUN sudo apt-get update
+RUN apt-get install -y  git wget curl cmake vim man build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev libboost-all-dev libevent-dev python-dev
+
+#Install cogutil
+RUN cd /tmp && git clone https://github.com/opencog/cogutil.git && \
+    cd cogutil && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 && \
+    make install && \
+    ldconfig
+
+#Install moses
+RUN cd /tmp && git clone https://github.com/opencog/moses.git && \
+    cd moses && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 && \
+    make install && \
+    ldconfig
 
 ENV HOME /home/root
 
