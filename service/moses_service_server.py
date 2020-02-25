@@ -9,6 +9,7 @@ from concurrent import futures
 
 import grpc
 import pandas as pd
+import os
 
 from config import MOZI_URI, GRPC_PORT, setup_logging
 from config import get_logger
@@ -32,6 +33,7 @@ class MosesService(moses_service_pb2_grpc.MosesServiceServicer):
         crossval_opts = {"folds": request.crossValOpts.folds, "testSize": request.crossValOpts.testSize,
                          "randomSeed": request.crossValOpts.randomSeed}
         moses_opts, dataset, target_feature = request.mosesOpts, request.dataset, request.targetFeature
+        dataset = os.path.join("/home/root/datasets", dataset)
         filter_opts = {"score": request.filter.score, "value": request.filter.value}
         logger.info(f"Received request with Moses Options: {moses_opts}\n Cross Validation Options: {crossval_opts}\n")
 

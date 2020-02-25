@@ -29,6 +29,7 @@ services:
 
       volumes:
         - $HOME/.mozi/dev:/opt
+        - $TEST_DIR:/home/root/datasets
       command: bash -c "circusd --log-level debug circus-dev.ini"
 
   frontend:

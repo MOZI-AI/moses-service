@@ -4,7 +4,7 @@ MAINTAINER Abdulrahman Semrie <xabush@singularitynet.io>
 #Run apt-get in NONINTERACTIVE mode
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN sudo apt-get update
+RUN apt-get update
 RUN apt-get install -y  git wget curl cmake vim man build-essential libbz2-dev libssl-dev libreadline-dev libsqlite3-dev tk-dev libboost-all-dev libevent-dev python-dev
 
 #Install cogutil
